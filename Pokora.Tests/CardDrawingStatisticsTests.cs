@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Pokora.Tests
@@ -73,6 +74,49 @@ namespace Pokora.Tests
         private void CheckProba(CombinationType combinationType, double currentProba, double low, double high)
         {
             Assert.IsTrue(currentProba >= low && currentProba<= high, $"{combinationType.ToString()} : {currentProba} is not betwen {low} and {high}");
+        }
+
+
+        [Test]
+        public void Statistics_Score_Hands()
+        {
+            int simulationCount = 1000000;
+            var cardCombinations = new List<CardCombination>();
+
+            var deck = new Deck();
+            var cards = new List<Card>();
+            for (int i = 0; i < simulationCount; i++)
+            {
+                deck.Regroup();
+                deck.Shuffle();
+
+                cards.Clear();
+                for (int j = 0; j < 7; j++)
+                {
+                    cards.Add(deck.Draw());
+                }
+
+                var cardCombination = _combinationEvaluator.EvaluateCards(cards);
+                cardCombinations.Add(cardCombination);
+            }
+
+            cardCombinations = cardCombinations.OrderByDescending(combination => combination.Score).ToList();
+            var previousCombinationType = (int)CombinationType.RoyalFlush;
+            CardCombination previousCombination = null;
+            foreach (var cardCombination in cardCombinations)
+            {
+                if ((int) cardCombination.Type > previousCombinationType)
+                {
+                    var cardsString = CardsBuilder.BuildStringFromCards(cardCombination.Cards);
+                    var previousCardsString = CardsBuilder.BuildStringFromCards(cardCombination.Cards);
+                    throw new Exception(
+                        $"{cardsString} is a {cardCombination.Type} with {cardCombination.Score} that is lower in score than {previousCardsString}-{previousCombination.Type}-{previousCombination.Score}");
+                }
+
+                previousCombination = cardCombination;
+                previousCombinationType = (int)cardCombination.Type;
+            }
+
         }
     }
 }

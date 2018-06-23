@@ -1,4 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
+using NUnit.Framework;
 
 namespace Pokora.Tests
 {
@@ -140,6 +143,57 @@ namespace Pokora.Tests
 
             Assert.AreEqual(CombinationType.HighCard, combination.Type);
             Assert.AreEqual(expectedCombination, combinationString);
+        }
+
+        [Test]
+        public void ShouldPutAScoreOnEachHand()
+        {
+            var hands = new List<string>();
+            hands.Add("AH KH QH JH TH 2S 4S");// RoyalFlush
+            hands.Add("AS KS QS JS TS 8D 7H");// RoyalFlush
+            hands.Add("QH JH TH 9H 8H AH 7S");// StraightFlush
+            hands.Add("AS 2S 3S 4S 5S 8D 7H");// StraightFlush
+            hands.Add("KH KS KD KC 3S 2S 4S");// FourOfAKind
+            hands.Add("KH KS KD KC 3S 2H 2S");// FourOfAKind
+            hands.Add("JH JS JD JC 3S 2H 2S");// FourOfAKind
+            hands.Add("AH AS AD 3C 4S 3H 2S");// FullHouse
+            hands.Add("AH AS AD 2C 4S 2H 2S");// FullHouse
+            hands.Add("KH KS KD AC AS 2H 2S");// FullHouse
+            hands.Add("AD 4D KD 6D 7D 8D 9D");// Flush
+            hands.Add("4S QS JS TS 9S 5S 2S");// Flush
+            hands.Add("TH 9D 8C 7C 6C 2S AS");// Straight
+            hands.Add("9D 8C 7C 6C 5S AS JD");// Straight
+            hands.Add("AD 2S 3D 4S 5S 8D 7H");// Straight
+            hands.Add("AS AD AC KS 4C 2C 5H");// ThreeOfAKind
+            hands.Add("AS AD AC KS 4C 2C 3H");// ThreeOfAKind
+            hands.Add("AS AD AC QS 4C 2C 3H");// ThreeOfAKind
+            hands.Add("KS KD KC AS JC TC 3H");// ThreeOfAKind
+            hands.Add("KS KD QS QD 6H 4H 3H");// TwoPairs
+            hands.Add("KS KD QS QD 5H 4H 3H");// TwoPairs
+            hands.Add("KS KD 2S 2D 5H 4H 3H");// TwoPairs
+            hands.Add("QS QD JS JD 5H 4H 3H");// TwoPairs
+            hands.Add("QS QD AS TD 5H 4H 3H");// OnePair
+            hands.Add("QS QD JS KD 5H 4H 3H");// OnePair
+            hands.Add("JS JD AS KD 5H 4H 3H");// OnePair
+            hands.Add("AS QD TS KD 5H 4H 3H");// HighCards
+            hands.Add("AS 7D TS KD 5H 4H 3H");// HighCards
+            hands.Add("AS 7D 8S KD 5H 4H 3H");// HighCards
+            hands.Add("AS 7D 8S JD 5H 4H 3H");// HighCards
+
+            var results = new Dictionary<string, CardCombination>();
+            foreach (var hand in hands)
+            {
+                var cards = CardsBuilder.BuildCardsFromString(hand);
+                var combination = _combinationEvaluator.EvaluateCards(cards);
+                results.Add(hand, combination);
+            }
+
+           var ordererResults = results.OrderByDescending(kvp => kvp.Value.Score).ToList();
+
+            for (int i = 0; i < ordererResults.Count; i++)
+            {
+                Assert.AreEqual(hands[i], ordererResults[i].Key, $"{hands[i]} expected but {ordererResults[i].Key} actual");
+            }
         }
     }
 }

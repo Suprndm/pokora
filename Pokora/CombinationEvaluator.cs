@@ -200,7 +200,7 @@ namespace Pokora
                 combinationHeight += cardValue * Math.Pow(0.07, i);
             }
 
-            var score = combinationHeight * Math.Pow(10, (int) combinationType);
+            var score = combinationHeight * Math.Pow(14, (int) combinationType);
 
             return new CardCombination(combinationType, combination.ToList(), score);
         }
