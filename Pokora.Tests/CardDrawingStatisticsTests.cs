@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using NUnit.Framework;
 
 namespace Pokora.Tests
@@ -18,7 +17,7 @@ namespace Pokora.Tests
         [Test]
         public void Statistics_Analalys_Hands()
         {
-            int simulationCount = 100000;
+            int simulationCount = 1000000;
             var occurencies = new Dictionary<CombinationType, int>();
             occurencies.Add(CombinationType.RoyalFlush, 0);
             occurencies.Add(CombinationType.StraightFlush, 0);
@@ -48,12 +47,32 @@ namespace Pokora.Tests
                 occurencies[cardCombination.Type]++;
             }
             var results = new List<string>();
+
+            var probabilities = new Dictionary<CombinationType, double>();
+
             foreach (var occurence in occurencies)
             {
-                results.Add($"{occurence.Key.ToString()} : {Math.Round((double)occurence.Value / simulationCount * 100, 3)}%");
+                var proba = (double) occurence.Value / simulationCount;
+                results.Add($"{occurence.Key.ToString()} : {Math.Round(proba * 100,3)}%");
+
+                probabilities.Add(occurence.Key, proba);
             }
 
-            Assert.IsTrue(true);
+            CheckProba(CombinationType.RoyalFlush, probabilities[CombinationType.RoyalFlush], 0.00002, 0.00004);
+            CheckProba(CombinationType.StraightFlush, probabilities[CombinationType.StraightFlush], 0.0002, 0.0004);
+            CheckProba(CombinationType.FourOfAKind, probabilities[CombinationType.FourOfAKind], 0.0015, 0.002);
+            CheckProba(CombinationType.FullHouse, probabilities[CombinationType.FullHouse], 0.02, .03);
+            CheckProba(CombinationType.Flush, probabilities[CombinationType.Flush], 0.025, 0.035);
+            CheckProba(CombinationType.Straight, probabilities[CombinationType.Straight], 0.042, 0.049);
+            CheckProba(CombinationType.ThreeOfAKind, probabilities[CombinationType.ThreeOfAKind], 0.042, 0.05);
+            CheckProba(CombinationType.TwoPair, probabilities[CombinationType.TwoPair], 0.20, 0.25);
+            CheckProba(CombinationType.OnePair, probabilities[CombinationType.OnePair], 0.40, 0.45);
+            CheckProba(CombinationType.HighCard, probabilities[CombinationType.HighCard], 0.15, 0.19);
+        }
+
+        private void CheckProba(CombinationType combinationType, double currentProba, double low, double high)
+        {
+            Assert.IsTrue(currentProba >= low && currentProba<= high, $"{combinationType.ToString()} : {currentProba} is not betwen {low} and {high}");
         }
     }
 }
