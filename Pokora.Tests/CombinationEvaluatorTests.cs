@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using NUnit.Framework;
+using Pokora.Cards;
+using Pokora.Poker;
 
 namespace Pokora.Tests
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Pokora
+namespace Pokora.Poker
 {
     public class CombinationEvaluator
     {
