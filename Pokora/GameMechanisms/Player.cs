@@ -10,11 +10,11 @@ namespace Pokora.GameMechanisms
         public event Action<PlayerAction> ActionGiven;
         public Player(string name, double cash, IPlayerController controller, INotifier notifier)
         {
+            _notifier = notifier;
             Name = name;
             Cash = cash;
             Controller = controller;
-            _notifier = notifier;
-
+            Controller.LinkPlayer(this);
             Controller.ActionReceived += Controller_ActionReceived;
         }
 
@@ -26,7 +26,7 @@ namespace Pokora.GameMechanisms
             private set
             {
                 _cash = value;
-                _notifier.PlayerCashChanged(Name, _bid);
+                _notifier.PlayerCashChanged(Name, _cash);
             }
         }
 
@@ -133,6 +133,7 @@ namespace Pokora.GameMechanisms
         public void GetAvailableActions(IList<PlayerAction> availableActions)
         {
             _playerAvailableActions = availableActions;
+            Controller.SendAvailableActions(_playerAvailableActions);
             _notifier.PlayerAvailableActionsChanged(Name, availableActions);
         }
 
@@ -150,12 +151,13 @@ namespace Pokora.GameMechanisms
         {
             _isPlayerTurn = true;
             _notifier.PlayerTurnBegin(Name);
+            Controller.NotifyTurn();
         }
 
         public void EndTurn()
         {
             _isPlayerTurn = false;
-            _notifier.PlayerTurnBegin(Name);
+            _notifier.PlayerTurnEnd(Name);
         }
 
         public void GiveHand(Card card1, Card card2)

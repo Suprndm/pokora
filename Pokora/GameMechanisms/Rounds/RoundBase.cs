@@ -33,8 +33,24 @@ namespace Pokora.GameMechanisms.Rounds
 
         public void Start(IList<Player> players)
         {
+            Players = players;
             _notifier.RoundStarted(RoundName);
             Setup();
+            _currentPlayer = Players.First();
+
+            ComputePlayersActions();
+
+            var roundEnds = EvalRoundEnd();
+
+            if (!roundEnds)
+            {
+                _currentPlayer.StartTurn();
+            }
+            else
+            {
+                _notifier.RoundEnded(RoundName);
+                RoundEnded?.Invoke(_currentPlayer);
+            }
         }
 
         public void HandleAction(PlayerAction playerAction)
@@ -91,10 +107,12 @@ namespace Pokora.GameMechanisms.Rounds
                 case PlayerState.Raise:
                     player.Pay(playerAction.Amount); break;
                 case PlayerState.AllIn:
-                    player.Pay(playerAction.Amount); break;
+                    player.Pay(player.Cash); break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            player.State = playerAction.State;
         }
 
         private void ComputePlayersActions()
@@ -112,9 +130,9 @@ namespace Pokora.GameMechanisms.Rounds
                     availableActions.Add(new PlayerAction(player, PlayerState.Fold, 0, 0));
                     if (player.Bid < maxBid)
                     {
-                        availableActions.Add(new PlayerAction(player, PlayerState.Call, maxBid - player.Bid, maxBid - player.Bid));
+                        availableActions.Add(new PlayerAction(player, PlayerState.Call, maxBid - player.Bid, maxBid - player.Bid, maxBid - player.Bid));
                         availableActions.Add(new PlayerAction(player, PlayerState.Raise, (maxBid - player.Bid) * 2, player.Cash - 1));
-                        availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash));
+                        availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash, player.Cash));
                     }
                     else
                     {
@@ -131,13 +149,12 @@ namespace Pokora.GameMechanisms.Rounds
         private bool EvalRoundEnd()
         {
             var maxBid = Players.Max(player => player.Bid);
-            if (!Players.Any(player => player.Bid < maxBid
+            if ((!Players.Any(player => player.Bid < maxBid
                                                     && player.State != PlayerState.AllIn && player.State != PlayerState.Fold)
-                && Players.Any(player => player.State == PlayerState.None))
+                && Players.All(player => player.State != PlayerState.None) )|| (Players.Count(player => player.State != PlayerState.Fold) == 1))
             {
                 return true;
             }
-
             return false;
         }
     }

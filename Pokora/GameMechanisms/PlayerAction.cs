@@ -7,12 +7,13 @@ namespace Pokora
 {
     public class PlayerAction
     {
-        public PlayerAction(Player player, PlayerState state, double lower, double highest)
+        public PlayerAction(Player player, PlayerState state, double lower, double highest, double amount = 0)
         {
             State = state;
             Lower = lower;
             Highest = highest;
             Player = player;
+            Amount = amount;
         }
 
         public Player Player { get;}
@@ -20,6 +21,6 @@ namespace Pokora
         public PlayerState State { get; }
         public double Lower { get;  }
         public double Highest { get;}
-        public double Amount { get; set; }
+        public double Amount { get; }
     }
 }

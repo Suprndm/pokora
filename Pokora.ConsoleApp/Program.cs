@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Unity;
 
 namespace Pokora.ConsoleApp
 {
@@ -6,7 +8,26 @@ namespace Pokora.ConsoleApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            MainAsync().Wait();
+        }
+
+        static async Task MainAsync()
+        {
+            try
+            {
+                var container = await Bootstrapper.RegisterConfiguration();
+                var pokoraInterface = container.Resolve<PokoraInterface>();
+                var notifier = container.Resolve<ConsoleNotifier>();
+                pokoraInterface.Setup(notifier);
+
+                Console.WriteLine("Game finished ?");
+                Console.Read();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"An error occured will setting up application: {e}");
+                Console.ReadKey(true);
+            }
         }
     }
 }

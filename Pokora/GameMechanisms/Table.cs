@@ -28,6 +28,8 @@ namespace Pokora.GameMechanisms
         private Game _game;
         private INotifier _notifier;
 
+        public Game CurrentGame => _game;
+
 
         public void Join(string userName, IPlayerController controller)
         {
@@ -55,9 +57,9 @@ namespace Pokora.GameMechanisms
 
             var dealerPlayer = SetupDealer();
             _game = new Game(SmallBlind, BigBlind, _deck, _notifier);
+            _game.GameEnded += _game_GameEnded;
             _game.Start(Players, dealerPlayer);
 
-            _game.GameEnded += _game_GameEnded;
         }
 
         private void _game_GameEnded()
@@ -79,9 +81,9 @@ namespace Pokora.GameMechanisms
 
                 Players = Players.Where(p => p.Cash > 0).ToList();
                 _game = new Game(SmallBlind, BigBlind, _deck, _notifier);
+                _game.GameEnded += _game_GameEnded;
                 _game.Start(Players, nextDealer);
 
-                _game.GameEnded += _game_GameEnded;
             }
         }
 
@@ -100,10 +102,10 @@ namespace Pokora.GameMechanisms
             {
                 count++;
                 nextDealer = Players[(_dealerIndex + count) % Players.Count];
-            } while (nextDealer.Cash > 0);
+            } while (nextDealer.Cash == 0);
 
             _notifier.DealerPlaced(nextDealer.Name);
-
+            _dealerIndex = Players.IndexOf(nextDealer);
             return nextDealer;
         }
 

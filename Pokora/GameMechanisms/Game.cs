@@ -13,7 +13,7 @@ namespace Pokora.GameMechanisms
         public IList<Player> Players { get; set; }
         public Deck Deck { get; }
         public TableCards Cards { get; }
-        private IList<Pot> _pots;
+        public IList<Pot> Pots { get; }
         private IList<IRound> _rounds;
         private IRound _currentRound;
         private readonly INotifier _notifier;
@@ -27,7 +27,7 @@ namespace Pokora.GameMechanisms
             Deck = deck;
             _notifier = notifier;
             Cards = new TableCards(_notifier);
-            _pots = new List<Pot>();
+            Pots = new List<Pot>();
             _combinationEvaluator = new CombinationEvaluator();
             _rounds = new List<IRound>()
             {
@@ -43,8 +43,13 @@ namespace Pokora.GameMechanisms
             _notifier.GameStartedWith(players.Select(p => p.Name).ToList());
             Deck.Regroup();
             Deck.Shuffle();
-            _notifier.DeckShuffled();
 
+            foreach (var player in players.Where(p=>p.State!=PlayerState.AllIn))
+            {
+                player.State = PlayerState.None;
+            }
+
+            _notifier.DeckShuffled();
             OrderPlayers(players, dealer);
             _currentRound = _rounds[0];
             StartRound();
@@ -107,7 +112,7 @@ namespace Pokora.GameMechanisms
 
         private void HandlePots()
         {
-            foreach (var previousPot in _pots)
+            foreach (var previousPot in Pots)
             {
                 foreach (var player in previousPot.Participants.ToList().Where(p => p.State == PlayerState.Fold))
                 {
@@ -132,7 +137,7 @@ namespace Pokora.GameMechanisms
                         sidePot.DeclareParticipant(player);
                 }
 
-                _pots.Add(sidePot);
+                Pots.Add(sidePot);
             }
 
             var pot = new Pot();
@@ -144,13 +149,25 @@ namespace Pokora.GameMechanisms
                     pot.DeclareParticipant(player);
             }
 
-            _pots.Add(pot);
+            var equivalantPot = Pots.FirstOrDefault(p =>
+                p.Participants.All(participant => pot.Participants.Contains(participant)));
+            if (equivalantPot != null)
+            {
+                equivalantPot.Earn(pot.Amount);
+            }
+            else
+            {
+                Pots.Add(pot);
+            }
 
-            _notifier.PotsUpdated(_pots);
+            _notifier.PotsUpdated(Pots);
         }
 
         private void ReorderPlayers(Player lastPlayerToPlay)
         {
+            if(Players.All(p=>p.State==PlayerState.AllIn))
+                return;
+
             var indexOfLastPlayer = Players.IndexOf(lastPlayerToPlay);
             var nextPlayer = Players[(indexOfLastPlayer + 1) % Players.Count];
 
@@ -169,12 +186,12 @@ namespace Pokora.GameMechanisms
             var dealerIndex = players.IndexOf(dealer);
             var firstPlayerIndex = dealerIndex;
             Players = new List<Player>();
-            Players.Add(Players[firstPlayerIndex]);
+            Players.Add(players[firstPlayerIndex]);
 
             for (int i = 1; i < players.Count; i++)
             {
                 var playerIndex = (dealerIndex + i) % players.Count;
-                Players.Add(Players[playerIndex]);
+                Players.Add(players[playerIndex]);
             }
         }
 
@@ -183,7 +200,7 @@ namespace Pokora.GameMechanisms
             if (Players.Count(player => player.State != PlayerState.Fold) == 1)
             {
                 var winner = Players.Single(player => player.State != PlayerState.Fold);
-                foreach (var pot in _pots)
+                foreach (var pot in Pots)
                 {
                     pot.DeclareWinners(new List<Player>() { winner });
                     _notifier.PlayersWinPots(new List<string> { winner.Name }, pot, null);
@@ -191,7 +208,7 @@ namespace Pokora.GameMechanisms
             }
             else
             {
-                foreach (var pot in _pots)
+                foreach (var pot in Pots)
                 {
                     var results = new Dictionary<Player, CardCombination>();
                     foreach (var player in pot.Participants)
@@ -224,7 +241,7 @@ namespace Pokora.GameMechanisms
                     }
 
                     pot.DeclareWinners(winners);
-                    _notifier.PlayersWinPots(winners.Select(p=>p.Name).ToList(), pot, winnersHands);
+                    _notifier.PlayersWinPots(winners.Select(p => p.Name).ToList(), pot, winnersHands);
                 }
             }
         }

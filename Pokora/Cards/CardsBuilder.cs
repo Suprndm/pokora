@@ -4,6 +4,33 @@ namespace Pokora.Cards
 {
     public static class CardsBuilder
     {
+        public static string BuildStringFromCard(this Card card)
+        {
+            string str;
+            if (card.Value == 14)
+                str = "A";
+            else if (card.Value == 13)
+                str = "K";
+            else if (card.Value == 12)
+                str = "Q";
+            else if (card.Value == 11)
+                str = "J";
+            else if (card.Value == 10)
+                str = "T";
+            else str = card.Value.ToString();
+
+            if (card.Color == 1)
+                str += "H";
+            else if (card.Color == 2)
+                str += "C";
+            else if (card.Color == 3)
+                str += "S";
+            else if (card.Color == 4)
+                str += "D";
+
+            return str;
+        }
+
         public static IReadOnlyCollection<Card> BuildCardsFromString(string s)
         {
             var cards = new List<Card>();
@@ -47,29 +74,7 @@ namespace Pokora.Cards
             IList<string> cardStrings = new List<string>();
             foreach (var card in cards)
             {
-                string str;
-                if (card.Value == 14)
-                    str = "A";
-                else if (card.Value == 13)
-                    str = "K";
-                else if (card.Value == 12)
-                    str = "Q";
-                else if (card.Value == 11)
-                    str = "J";
-                else if (card.Value == 10)
-                    str = "T";
-                else str = card.Value.ToString();
-
-                if (card.Color == 1)
-                    str += "H";
-                else if (card.Color == 2)
-                    str += "C";
-                else if (card.Color == 3)
-                    str += "S";
-                else if (card.Color == 4)
-                    str += "D";
-
-                cardStrings.Add(str);
+                cardStrings.Add(BuildStringFromCard(card));
             }
 
             return string.Join(" ", cardStrings);
