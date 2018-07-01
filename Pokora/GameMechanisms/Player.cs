@@ -129,8 +129,9 @@ namespace Pokora.GameMechanisms
             }
             else
             {
+                var part = Bid;
                 Bid = 0;
-                return Bid;
+                return part;
             }
         }
 
