@@ -41,6 +41,7 @@ namespace Pokora.GameMechanisms
         public void Start(IList<Player> players, Player dealer)
         {
             _notifier.GameStartedWith(players.Select(p => p.Name).ToList());
+
             Deck.Regroup();
             Deck.Shuffle();
 

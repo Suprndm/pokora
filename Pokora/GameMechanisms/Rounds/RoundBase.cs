@@ -147,13 +147,17 @@ namespace Pokora.GameMechanisms.Rounds
                     if (player.Bid < maxBid)
                     {
                         availableActions.Add(new PlayerAction(player, PlayerState.Call, maxBid - player.Bid, maxBid - player.Bid, maxBid - player.Bid));
-                        availableActions.Add(new PlayerAction(player, PlayerState.Raise, (maxBid - player.Bid) * 2, player.Cash - 1));
+                        if (player.Cash > maxBid - player.Bid)
+                        {
+                            availableActions.Add(new PlayerAction(player, PlayerState.Raise, (maxBid - player.Bid) * 2, player.Cash));
+                        } 
+
                         availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash, player.Cash));
                     }
                     else
                     {
                         availableActions.Add(new PlayerAction(player, PlayerState.Check, 0, 0));
-                        availableActions.Add(new PlayerAction(player, PlayerState.Bet, SmallBlind, player.Cash - 1));
+                        availableActions.Add(new PlayerAction(player, PlayerState.Bet, SmallBlind, player.Cash));
                         availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash));
                     }
                 }
@@ -167,7 +171,7 @@ namespace Pokora.GameMechanisms.Rounds
             var maxBid = Players.Max(player => player.Bid);
             var playersRoundOverCount = Players.Count(player => player.IsRoundOver(maxBid));
 
-            if(playersRoundOverCount==Players.Count)
+            if (playersRoundOverCount == Players.Count)
                 return true;
 
             if (playersRoundOverCount == Players.Count - 1)

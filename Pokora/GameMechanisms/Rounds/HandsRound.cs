@@ -13,8 +13,6 @@
             Players[Players.Count - 2].Pay(SmallBlind);
             Players[Players.Count - 1].Pay(BigBlind);
 
-            Deck.Shuffle();
-
             foreach (var player in Players)
             {
                 player.GiveHand(Deck.Draw(), Deck.Draw());

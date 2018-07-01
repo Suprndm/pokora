@@ -42,23 +42,23 @@ namespace Pokora.ConsoleApp.PlayerControllers
                 var split = commandString.Split(" ");
                 if (split.Length == 1)
                 {
-                    if (split[0] == "fold")
+                    if (split[0] == "fold" && _availableActions.Any(a => a.State == PlayerState.Fold))
                         playerAction = new PlayerAction(_player, PlayerState.Fold, 0, 0);
-                    if (split[0] == "check")
+                    if (split[0] == "check" && _availableActions.Any(a => a.State == PlayerState.Check))
                         playerAction = new PlayerAction(_player, PlayerState.Check, 0, 0);
-                    if (split[0] == "call")
+                    if (split[0] == "call" && _availableActions.Any(a => a.State == PlayerState.Call))
                         playerAction = new PlayerAction(_player, PlayerState.Call, 0, 0, _availableActions.Single(action => action.State == PlayerState.Call).Amount);
-                    if (split[0] == "allin")
+                    if (split[0] == "allin" && _availableActions.Any(a => a.State == PlayerState.AllIn))
                         playerAction = new PlayerAction(_player, PlayerState.AllIn, 0, 0, _availableActions.Single(action => action.State == PlayerState.AllIn).Amount);
                 }
                 else
                 {
                     var amount = int.Parse(split[1]);
-                    if (split[0] == "raise")
+                    if (split[0] == "raise" && _availableActions.Any(a => a.State == PlayerState.Raise))
                     {
                         playerAction = new PlayerAction(_player, PlayerState.Raise, 0, 0, amount);
                     }
-                    if (split[0] == "bet")
+                    if (split[0] == "bet" && _availableActions.Any(a => a.State == PlayerState.Bet))
                     {
                         playerAction = new PlayerAction(_player, PlayerState.Bet, 0, 0, amount);
                     }
