@@ -69,6 +69,15 @@ namespace Pokora.GameMechanisms
         private double _cash;
         private PlayerHand _hand;
 
+        public bool IsRoundOver(double maxBid)
+        {
+            if (State == PlayerState.Fold) return true;
+            if (State == PlayerState.AllIn) return true;
+            if (Bid == maxBid && State!= PlayerState.None) return true;
+
+            return false;
+        }
+
         public void LoseTable()
         {
             _notifier.PlayerLose(Name);

@@ -34,6 +34,7 @@ namespace Pokora.GameMechanisms.Rounds
         public void Start(IList<Player> players)
         {
             Players = players;
+            ResetPlayersStateIfNeeded();
             _notifier.RoundStarted(RoundName);
             Setup();
             _currentPlayer = Players.First();
@@ -71,6 +72,15 @@ namespace Pokora.GameMechanisms.Rounds
             }
         }
 
+        private void ResetPlayersStateIfNeeded()
+        {
+
+            foreach (var player in Players.Where(p => p.State != PlayerState.AllIn && p.State != PlayerState.Fold))
+            {
+                player.State = PlayerState.None;
+            }
+        }
+
         private void NextTurn()
         {
             var nextPlayer =
@@ -99,7 +109,6 @@ namespace Pokora.GameMechanisms.Rounds
                     player.Pay(playerAction.Amount);
                     break;
                 case PlayerState.Check:
-
                     break;
                 case PlayerState.Bet:
                     player.Pay(playerAction.Amount);
@@ -112,7 +121,14 @@ namespace Pokora.GameMechanisms.Rounds
                     throw new ArgumentOutOfRangeException();
             }
 
-            player.State = playerAction.State;
+            if (player.Cash == 0 && playerAction.State != PlayerState.Fold)
+            {
+                player.State = PlayerState.AllIn;
+            }
+            else
+            {
+                player.State = playerAction.State;
+            }
         }
 
         private void ComputePlayersActions()
@@ -149,12 +165,21 @@ namespace Pokora.GameMechanisms.Rounds
         private bool EvalRoundEnd()
         {
             var maxBid = Players.Max(player => player.Bid);
-            if ((!Players.Any(player => player.Bid < maxBid
-                                                    && player.State != PlayerState.AllIn && player.State != PlayerState.Fold)
-                && Players.All(player => player.State != PlayerState.None) )|| (Players.Count(player => player.State != PlayerState.Fold) == 1))
-            {
+            var playersRoundOverCount = Players.Count(player => player.IsRoundOver(maxBid));
+
+            if(playersRoundOverCount==Players.Count)
                 return true;
+
+            if (playersRoundOverCount == Players.Count - 1)
+            {
+                if (Players.Count(player =>
+                        player.State == PlayerState.Fold || (player.State == PlayerState.AllIn && player.Bid == 0)) ==
+                    Players.Count - 1)
+                {
+                    return true;
+                }
             }
+
             return false;
         }
     }

@@ -89,10 +89,21 @@ namespace Pokora.ConsoleApp
             _eventManager.RaiseEvent($"{name} ended");
         }
 
-        public void PlayersWinPots(IList<string> playerNames, Pot pot, IList<CardCombination> combinations)
+        public void PlayersWinPots(IList<KeyValuePair<Player, CardCombination>> winners, Pot pot)
         {
             _pokoraDisplayer.UpdateDisplay();
-            _eventManager.RaiseEvent($"{string.Join(" and ",playerNames)} won the pot of {pot.Amount}");
+
+            if (winners.Count == 1 && winners[0].Value == null)
+            {
+                _eventManager.RaiseEvent($"{winners[0].Key.Name} won {pot.Amount / winners.Count} from the pot because every one else fold");
+            }
+            else
+            {
+                for (int i = 0; i < winners.Count; i++)
+                {
+                    _eventManager.RaiseEvent($"{winners[i].Key.Name} won {pot.Amount / winners.Count} from the pot with a {winners[i].Value.Type} : {CardsBuilder.BuildStringFromCards(winners[i].Value.Cards)}");
+                }
+            }
         }
 
         public void PlayerTurnBegin(string playerName)

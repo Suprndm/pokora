@@ -19,7 +19,7 @@ namespace Pokora
         void PotsUpdated(IList<Pot> pots);
         void RoundStarted(string name);
         void RoundEnded(string name);
-        void PlayersWinPots(IList<string> playerNames, Pot pot, IList<CardCombination> combinations);
+        void PlayersWinPots(IList<KeyValuePair<Player, CardCombination>> winners, Pot pot);
         void PlayerTurnBegin(string playerName);
         void PlayerTurnEnd(string playerName);
         void PlayerActionDone(string playerName, PlayerAction action);

@@ -30,11 +30,11 @@ namespace Pokora.GameMechanisms
                 Participants.Remove(player);
         }
 
-        public void DeclareWinners(IList<Player> players)
+        public void DeclareWinners(IList<KeyValuePair<Player, CardCombination>> winners)
         {
-            foreach (var player in players)
+            foreach (var winner in winners)
             {
-                player.Earn(Amount/players.Count);
+                winner.Key.Earn(Amount/ winners.Count);
             }
         }
     }

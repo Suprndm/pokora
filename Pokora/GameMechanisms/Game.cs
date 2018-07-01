@@ -44,13 +44,13 @@ namespace Pokora.GameMechanisms
             Deck.Regroup();
             Deck.Shuffle();
 
-            foreach (var player in players.Where(p=>p.State!=PlayerState.AllIn))
-            {
-                player.State = PlayerState.None;
-            }
 
             _notifier.DeckShuffled();
+
             OrderPlayers(players, dealer);
+
+            ResetPlayersState();
+
             _currentRound = _rounds[0];
             StartRound();
         }
@@ -83,7 +83,6 @@ namespace Pokora.GameMechanisms
             else
             {
                 ReorderPlayers(lastPlayerToPlay);
-                ResetPlayersState();
                 PickNextRound();
                 StartRound();
             }
@@ -98,6 +97,7 @@ namespace Pokora.GameMechanisms
 
         private void ResetPlayersState()
         {
+
             foreach (var player in Players)
             {
                 player.State = PlayerState.None;
@@ -124,24 +124,27 @@ namespace Pokora.GameMechanisms
             var playersToCompute = Players.ToList();
             foreach (var allInPlayer in allInPlayers)
             {
-                var sidePot = new Pot();
-                var bid = allInPlayer.TakeAllBid();
-                sidePot.Earn(bid);
-                sidePot.DeclareParticipant(allInPlayer);
-                playersToCompute.Remove(allInPlayer);
-                foreach (var player in playersToCompute)
+                if (allInPlayer.Bid > 0)
                 {
-                    bid = player.TakePartOfTheBid(bid);
+                    var sidePot = new Pot();
+                    var bid = allInPlayer.TakeAllBid();
                     sidePot.Earn(bid);
-                    if (player.State != PlayerState.Fold)
-                        sidePot.DeclareParticipant(player);
-                }
+                    sidePot.DeclareParticipant(allInPlayer);
+                    playersToCompute.Remove(allInPlayer);
+                    foreach (var player in playersToCompute)
+                    {
+                        bid = player.TakePartOfTheBid(bid);
+                        sidePot.Earn(bid);
+                        if (player.State != PlayerState.Fold)
+                            sidePot.DeclareParticipant(player);
+                    }
 
-                Pots.Add(sidePot);
+                    Pots.Add(sidePot);
+                }
             }
 
             var pot = new Pot();
-            foreach (var player in playersToCompute)
+            foreach (var player in playersToCompute.Where(p => p.Bid > 0))
             {
                 var bid = player.TakeAllBid();
                 pot.Earn(bid);
@@ -149,23 +152,27 @@ namespace Pokora.GameMechanisms
                     pot.DeclareParticipant(player);
             }
 
-            var equivalantPot = Pots.FirstOrDefault(p =>
-                p.Participants.All(participant => pot.Participants.Contains(participant)));
-            if (equivalantPot != null)
+            if (pot.Participants.Count > 0)
             {
-                equivalantPot.Earn(pot.Amount);
+                var equivalantPot = Pots.FirstOrDefault(p =>
+                    p.Participants.All(participant => pot.Participants.Contains(participant)));
+                if (equivalantPot != null)
+                {
+                    equivalantPot.Earn(pot.Amount);
+                }
+                else
+                {
+                    Pots.Add(pot);
+                }
             }
-            else
-            {
-                Pots.Add(pot);
-            }
+
 
             _notifier.PotsUpdated(Pots);
         }
 
         private void ReorderPlayers(Player lastPlayerToPlay)
         {
-            if(Players.All(p=>p.State==PlayerState.AllIn))
+            if (Players.All(p => p.State == PlayerState.AllIn || p.State == PlayerState.Fold))
                 return;
 
             var indexOfLastPlayer = Players.IndexOf(lastPlayerToPlay);
@@ -177,7 +184,7 @@ namespace Pokora.GameMechanisms
                 nextPlayer = Players[(indexOfLastPlayer + 1) % Players.Count];
             }
 
-            Players = Players.Where(p => p.State != PlayerState.AllIn && p.State != PlayerState.Fold).ToList();
+         //   Players = Players.Where(p => p.State != PlayerState.AllIn && p.State != PlayerState.Fold).ToList();
             OrderPlayers(Players, nextPlayer);
         }
 
@@ -199,11 +206,16 @@ namespace Pokora.GameMechanisms
         {
             if (Players.Count(player => player.State != PlayerState.Fold) == 1)
             {
-                var winner = Players.Single(player => player.State != PlayerState.Fold);
+                var playerToWin = Players.Single(player => player.State != PlayerState.Fold);
+                var winner = new List<KeyValuePair<Player, CardCombination>>()
+                {
+                    new KeyValuePair<Player, CardCombination>(playerToWin, null)
+                };
+
                 foreach (var pot in Pots)
                 {
-                    pot.DeclareWinners(new List<Player>() { winner });
-                    _notifier.PlayersWinPots(new List<string> { winner.Name }, pot, null);
+                    pot.DeclareWinners(winner);
+                    _notifier.PlayersWinPots(winner, pot);
                 }
             }
             else
@@ -226,22 +238,21 @@ namespace Pokora.GameMechanisms
 
                     var resultList = results.OrderByDescending(result => result.Value.Score).ToList();
 
-                    var winners = new List<Player>();
-                    var winnersHands = new List<CardCombination>();
-                    winners.Add(resultList[0].Key);
-                    winnersHands.Add(resultList[0].Value);
-                    for (int i = 1; i < results.Count - 1; i++)
+                    var winners = new List<KeyValuePair<Player,CardCombination>>();
+                    winners.Add(resultList[0]);
+                    if (results.Count > 1)
                     {
-                        if (resultList[i].Value.Score == resultList[0].Value.Score)
+                        for (int i = 1; i < results.Count; i++)
                         {
-                            winners.Add(resultList[i].Key);
-                            winnersHands.Add(resultList[i].Value);
-
+                            if (resultList[i].Value.Score == resultList[0].Value.Score)
+                            {
+                                winners.Add(resultList[i]);
+                            }
                         }
                     }
 
                     pot.DeclareWinners(winners);
-                    _notifier.PlayersWinPots(winners.Select(p => p.Name).ToList(), pot, winnersHands);
+                    _notifier.PlayersWinPots(winners, pot);
                 }
             }
         }

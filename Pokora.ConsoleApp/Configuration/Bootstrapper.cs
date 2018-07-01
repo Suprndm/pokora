@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Monithor.Client;
 using Monithor.Definitions;
 using Pokora.ConsoleApp.Display;
@@ -31,6 +32,7 @@ namespace Pokora.ConsoleApp
 
             while (!connectionEstablished)
             {
+                Console.WriteLine("trying to connect to monithor");
                 await Task.Delay(1000);
             }
 
