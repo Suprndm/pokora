@@ -19,7 +19,7 @@ namespace Pokora.ConsoleApp
 
         private readonly ConsoleNotifier _consoleNotifier;
         private readonly EventManager _eventManager;
-        private readonly int _simulationCount = 100;
+        private readonly int _simulationCount = 10000;
 
         public PokoraInterface(
             Logger logger,
@@ -33,23 +33,27 @@ namespace Pokora.ConsoleApp
             _eventManager = eventManager;
         }
 
- 
+
 
         public async Task Start()
         {
+
+            double totalPaid = 0;
+            double totalEarn = 0;
+
             var users = new List<User>
             {
-                new User(100)
+                new User(1000)
                 {
                     Name = "Tommy",
                     Controller = new AllinController()
                 },
-                new User(100)
+                new User(1000)
                 {
                     Name = "Ratchet",
                     Controller = new AllinController()
                 },
-                new User(100)
+                new User(1000)
                 {
                     Name = "Corail",
                     Controller = new AllinController()
@@ -63,7 +67,7 @@ namespace Pokora.ConsoleApp
             do
             {
                 spinAngGoCount++;
-                Console.WriteLine(spinAngGoCount+ " " );
+                Console.WriteLine(spinAngGoCount + " ");
 
                 _spinAndGoGame = new SpinAndGoGame(1, _consoleNotifier, spinAngGoCount);
                 _displayer.SetupGameDisplay(_spinAndGoGame);
@@ -76,10 +80,17 @@ namespace Pokora.ConsoleApp
 
                 winner.Earn(_spinAndGoGame.Prize);
 
-            } while (users.All(user => user.Cash - _spinAndGoGame.Fee>= 0) && spinAngGoCount < _simulationCount);
+                totalEarn += _spinAndGoGame.Prize;
+                totalPaid += _spinAndGoGame.Fee *3;
+
+            } while (users.All(user => user.Cash - _spinAndGoGame.Fee >= 0) && spinAngGoCount < _simulationCount);
 
             _displayer.SetConsoleDisplayState(true);
             _displayer.UpdateDisplay();
+
+            Console.WriteLine($"TotalPaid : {totalPaid}");
+            Console.WriteLine($"TotalEarn : {totalEarn}");
+            Console.WriteLine($"Rake : {totalEarn/ totalPaid *100} %");
         }
 
         public void Setup(ConsoleNotifier notifier)

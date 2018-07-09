@@ -15,12 +15,14 @@ namespace Pokora.ConsoleApp.Configuration
 
         public Task LogMessageAsync(string message)
         {
-            return _monithorEmitter.Trace(MessageLevel.Informational, MessageType.Fonctional, "", message, "");
+            return Task.CompletedTask;
+            //     return _monithorEmitter.Trace(MessageLevel.Informational, MessageType.Fonctional, "", message, "");
         }
 
         public Task LogErrorAsync(string errorMessage)
         {
-            return _monithorEmitter.Trace(MessageLevel.Error, MessageType.Fonctional, "", errorMessage, "");
+            return Task.CompletedTask;
+           // return _monithorEmitter.Trace(MessageLevel.Error, MessageType.Fonctional, "", errorMessage, "");
         }
     }
 }

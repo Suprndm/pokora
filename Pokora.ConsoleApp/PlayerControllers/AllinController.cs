@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 using Pokora.GameMechanisms;
 
 namespace Pokora.ConsoleApp.PlayerControllers
 {
-    class AllinController : BaseController
+    public class AllinController : BaseController
     {
         public override void NotifyTurn()
         {

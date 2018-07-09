@@ -8,9 +8,12 @@ namespace Pokora.GameMechanisms
     {
         private readonly INotifier _notifier;
         public event Action<PlayerAction> ActionGiven;
+        private readonly Guid _guid;
 
         public Player(string name, double cash, IPlayerController controller, INotifier notifier)
         {
+            _guid = Guid.NewGuid();
+
             _notifier = notifier;
             Name = name;
             Cash = cash;
@@ -150,10 +153,12 @@ namespace Pokora.GameMechanisms
 
         private void Controller_ActionReceived(PlayerAction action)
         {
+        
+
             if (_isPlayerTurn == false) throw new Exception($"It is not {Name}'s turn");
 
             if (_playerAvailableActions.All(a => a.State != action.State))
-                throw new Exception($"{action} is not available for {Name}");
+                throw new Exception($"{action} is not available for {Name}({_guid})");
 
             ActionGiven?.Invoke(action);
         }

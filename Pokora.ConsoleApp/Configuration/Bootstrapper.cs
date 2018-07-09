@@ -31,11 +31,12 @@ namespace Pokora.ConsoleApp
 
             emitter.Connect();
 
-            while (!connectionEstablished)
-            {
-                Console.WriteLine("trying to connect to monithor");
-                await Task.Delay(1000);
-            }
+            //TODO remove azure slow
+            //while (!connectionEstablished)
+            //{
+            //    Console.WriteLine("trying to connect to monithor");
+            //    await Task.Delay(1000);
+            //}
 
            
             var container = new UnityContainer();

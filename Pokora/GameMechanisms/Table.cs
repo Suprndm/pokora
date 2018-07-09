@@ -15,6 +15,7 @@ namespace Pokora.GameMechanisms
             SeatsCount = seatsCount;
             _notifier = notifier;
             Players = new List<Player>();
+            _satPlayers = new List<Player>();
             _deck = new Deck();
         }
 
@@ -22,7 +23,7 @@ namespace Pokora.GameMechanisms
         public int BigBlind { get; }
         public int SeatsCount { get; }
         public double InitialCash { get; }
-
+        private IList<Player> _satPlayers;
         public IList<Player> Players { get; set; }
         private int _dealerIndex;
         private Deck _deck;
@@ -30,7 +31,6 @@ namespace Pokora.GameMechanisms
         private INotifier _notifier;
 
         public Game CurrentGame => _game;
-
 
         public virtual void Join(string userName, IPlayerController controller)
         {
@@ -42,6 +42,7 @@ namespace Pokora.GameMechanisms
 
             var player = new Player(userName, InitialCash, controller, _notifier);
             Players.Add(player);
+            _satPlayers.Add(player);
 
             player.ActionGiven += Player_ActionGiven;
         }
@@ -60,7 +61,6 @@ namespace Pokora.GameMechanisms
             _game = new Game(SmallBlind, BigBlind, _deck, _notifier);
             _game.GameEnded += _game_GameEnded;
             _game.Start(Players, dealerPlayer);
-
         }
 
         private void _game_GameEnded()
@@ -119,7 +119,7 @@ namespace Pokora.GameMechanisms
 
         public void Dispose()
         {
-            foreach (var player in Players)
+            foreach (var player in _satPlayers)
             {
                 player.Dispose();
             }
