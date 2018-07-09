@@ -18,6 +18,5 @@
                 player.GiveHand(Deck.Draw(), Deck.Draw());
             }
         }
-
     }
 }

@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Pokora.Cards;
 using Pokora.GameMechanisms;
+using Pokora.SpinAndGo;
 
 namespace Pokora.ConsoleApp.Display
 {
     public class PokoraDisplayer
     {
-        private Table _table;
-
+        private SpinAndGoGame _spinAndGoGame;
+        private bool _consoleDisplayEnabled = true;
         private IList<string> _events;
 
-        public void SetupDisplay(Table table)
+        public void SetupDisplay(IList<User> users)
         {
-            _table = table;
             _events = new List<string>();
             for (int i = 0; i < 40; i++)
             {
@@ -22,9 +22,14 @@ namespace Pokora.ConsoleApp.Display
             }
         }
 
+        public void SetupGameDisplay(SpinAndGoGame spinAndGoGame)
+        {
+            _spinAndGoGame = spinAndGoGame;
+        }
+
         public void PushEvent(string eventMessage)
         {
-           _events.RemoveAt(0);
+            _events.RemoveAt(0);
             _events.Add(eventMessage);
 
             UpdateDisplay();
@@ -32,21 +37,38 @@ namespace Pokora.ConsoleApp.Display
 
         public void OnNewTurn(Player player, IList<PlayerAction> actions)
         {
-            Console.Write($"{player.Name} - your actions : {string.Join(" | ", actions.Select(a=>$"{a.State} {a.Lower} - {a.Highest}"))} \n your choice :");
+            Console.Write($"{player.Name} - your actions : {string.Join(" | ", actions.Select(a => $"{a.State} {a.Lower} - {a.Highest}"))} \n your choice :");
+        }
+
+        public void SetConsoleDisplayState(bool isEnable)
+        {
+            _consoleDisplayEnabled = isEnable;
         }
 
         public void UpdateDisplay()
         {
-            Console.Clear();
+            if (_consoleDisplayEnabled)
+                Console.Clear();
+
+            // Draw Game
+            DrawGame();
+
             // Draw players
-            foreach (var player in _table.Players)
+            foreach (var player in _spinAndGoGame.Table.Players)
             {
                 DrawPlayer(player);
             }
 
-            DrawTable(_table);
+            DrawTable(_spinAndGoGame.Table);
 
             DrawEvents();
+        }
+
+        private void DrawGame()
+        {
+            Draw($"Spin&Go n°{_spinAndGoGame.GameCount} - Fee : {_spinAndGoGame.Fee}  - Prize : {_spinAndGoGame.Prize}");
+            Draw(string.Join(" | ", _spinAndGoGame.Users.Select(user => $"{user.Name} ({user.Cash})")));
+            Draw("-----------------------------------");
         }
 
         private void DrawPlayer(Player player)
@@ -57,7 +79,7 @@ namespace Pokora.ConsoleApp.Display
                 playerHandString =
                     $"{player.Hand.Card1.BuildStringFromCard()} {player.Hand.Card2.BuildStringFromCard()}";
             }
-            Console.WriteLine($"{player.Name}:{player.Cash} - {playerHandString} ->{player.Bid} - {player.State}");
+            Draw($"{player.Name}:{player.Cash} - {playerHandString} ->{player.Bid} - {player.State}");
 
         }
 
@@ -65,7 +87,7 @@ namespace Pokora.ConsoleApp.Display
         {
             if (table.CurrentGame != null)
             {
-                Console.WriteLine($"Cards : {CardsBuilder.BuildStringFromCards(_table.CurrentGame.Cards.Cards)}");
+                Draw($"Cards : {CardsBuilder.BuildStringFromCards(_spinAndGoGame.Table.CurrentGame.Cards.Cards)}");
 
                 if (table.CurrentGame.Pots != null && table.CurrentGame.Pots.Count > 0)
                 {
@@ -76,22 +98,30 @@ namespace Pokora.ConsoleApp.Display
                 }
                 else
                 {
-                    Console.WriteLine("Pot : 0");
+                    Draw("Pot : 0");
                 }
             }
         }
 
         private void DrawPot(Pot pot)
         {
-            Console.WriteLine($"Pot with {string.Join(" and ", pot.Participants.Select(par=>par.Name))} : {pot.Amount}");
+            Draw($"Pot with {string.Join(" and ", pot.Participants.Select(par => par.Name))} : {pot.Amount}");
         }
 
         private void DrawEvents()
         {
-            Console.WriteLine("Events:");
+            Draw("Events:");
             foreach (var e in _events)
             {
-                Console.WriteLine(e);
+                Draw(e);
+            }
+        }
+
+        private void Draw(string message)
+        {
+            if (_consoleDisplayEnabled)
+            {
+                Console.WriteLine(message);
             }
         }
     }

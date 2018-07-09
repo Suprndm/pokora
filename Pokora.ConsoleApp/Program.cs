@@ -18,7 +18,7 @@ namespace Pokora.ConsoleApp
                 var container = await Bootstrapper.RegisterConfiguration();
                 var pokoraInterface = container.Resolve<PokoraInterface>();
                 var notifier = container.Resolve<ConsoleNotifier>();
-                pokoraInterface.Setup(notifier);
+                await pokoraInterface.Start();
 
                 Console.WriteLine("Game finished ?");
                 Console.Read();

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Monithor.Client;
 using Monithor.Definitions;
 
-namespace Pokora.ConsoleApp
+namespace Pokora.ConsoleApp.Configuration
 {
     public class Logger
     {

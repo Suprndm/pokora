@@ -6,7 +6,6 @@ namespace Pokora.GameMechanisms.Rounds
 {
     public abstract class RoundBase : IRound
     {
-
         public int SmallBlind { get; }
         public int BigBlind { get; }
         public IList<Player> Players { get; set; }

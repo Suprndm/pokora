@@ -4,10 +4,11 @@ using System.Linq;
 
 namespace Pokora.GameMechanisms
 {
-    public class Player
+    public class Player : IDisposable
     {
         private readonly INotifier _notifier;
         public event Action<PlayerAction> ActionGiven;
+
         public Player(string name, double cash, IPlayerController controller, INotifier notifier)
         {
             _notifier = notifier;
@@ -159,8 +160,13 @@ namespace Pokora.GameMechanisms
 
         public void StartTurn()
         {
+            if (_playerAvailableActions.Count == 0)
+            {
+                return;
+            }
+
             _isPlayerTurn = true;
-            _notifier.PlayerTurnBegin(Name);
+            _notifier.PlayerTurnBegin(this, _playerAvailableActions);
             Controller.NotifyTurn();
         }
 
@@ -173,6 +179,11 @@ namespace Pokora.GameMechanisms
         public void GiveHand(Card card1, Card card2)
         {
             Hand = new PlayerHand(card1, card2);
+        }
+
+        public void Dispose()
+        {
+            Controller.ActionReceived -= Controller_ActionReceived;
         }
     }
 }

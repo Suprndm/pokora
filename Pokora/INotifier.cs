@@ -20,7 +20,7 @@ namespace Pokora
         void RoundStarted(string name);
         void RoundEnded(string name);
         void PlayersWinPots(IList<KeyValuePair<Player, CardCombination>> winners, Pot pot);
-        void PlayerTurnBegin(string playerName);
+        void PlayerTurnBegin(Player player, IList<PlayerAction> playerActions);
         void PlayerTurnEnd(string playerName);
         void PlayerActionDone(string playerName, PlayerAction action);
         void PlayerCardsReceived(string playerName, PlayerHand playerHand);
@@ -29,5 +29,6 @@ namespace Pokora
         void GameEnded();
         void CardsCleared();
         void DeckShuffled();
+        void SpinAndGoWonBy(Player player);
     }
 }

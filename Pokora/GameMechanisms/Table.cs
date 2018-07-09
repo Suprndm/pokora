@@ -4,8 +4,9 @@ using System.Linq;
 
 namespace Pokora.GameMechanisms
 {
-    public class Table
+    public class Table : IDisposable
     {
+        public event Action<Player> TableFinished;
         public Table(int smallBlind, int bigBlind, double initialCash, int seatsCount, INotifier notifier)
         {
             SmallBlind = smallBlind;
@@ -31,7 +32,7 @@ namespace Pokora.GameMechanisms
         public Game CurrentGame => _game;
 
 
-        public void Join(string userName, IPlayerController controller)
+        public virtual void Join(string userName, IPlayerController controller)
         {
             if (Players.Count >= SeatsCount)
                 throw new Exception($"Table is full - {userName} cannot join");
@@ -69,6 +70,8 @@ namespace Pokora.GameMechanisms
             {
                 var winner = Players.Single(p => p.Cash > 0);
                 winner.WinTable();
+
+                TableFinished?.Invoke(winner);
             }
             else
             {
@@ -112,6 +115,14 @@ namespace Pokora.GameMechanisms
         private bool EvalTableEnd()
         {
             return Players.Count(p => p.Cash > 0) == 1;
+        }
+
+        public void Dispose()
+        {
+            foreach (var player in Players)
+            {
+                player.Dispose();
+            }
         }
     }
 }

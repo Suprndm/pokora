@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Monithor.Client;
 using Monithor.Definitions;
+using Pokora.ConsoleApp.Configuration;
 using Pokora.ConsoleApp.Display;
 using Unity;
 using Unity.Lifetime;

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
+using Pokora.ConsoleApp.Configuration;
 using Pokora.ConsoleApp.Display;
 using Pokora.ConsoleApp.PlayerControllers;
-using Pokora.GameMechanisms;
+using Pokora.SpinAndGo;
 
 namespace Pokora.ConsoleApp
 {
@@ -11,13 +13,17 @@ namespace Pokora.ConsoleApp
     {
         private readonly Logger _logger;
         private readonly PokoraDisplayer _displayer;
-        private Table _table;
+
+
+        private SpinAndGoGame _spinAndGoGame;
+
         private readonly ConsoleNotifier _consoleNotifier;
         private readonly EventManager _eventManager;
+        private readonly int _simulationCount = 100;
 
         public PokoraInterface(
-            Logger logger, 
-            PokoraDisplayer displayer, 
+            Logger logger,
+            PokoraDisplayer displayer,
             ConsoleNotifier consoleNotifier,
             EventManager eventManager)
         {
@@ -27,20 +33,58 @@ namespace Pokora.ConsoleApp
             _eventManager = eventManager;
         }
 
+ 
+
+        public async Task Start()
+        {
+            var users = new List<User>
+            {
+                new User(100)
+                {
+                    Name = "Tommy",
+                    Controller = new AllinController()
+                },
+                new User(100)
+                {
+                    Name = "Ratchet",
+                    Controller = new AllinController()
+                },
+                new User(100)
+                {
+                    Name = "Corail",
+                    Controller = new AllinController()
+                },
+            };
+
+            _displayer.SetupDisplay(users);
+            _displayer.SetConsoleDisplayState(false);
+            _eventManager.EventReceived += _eventManager_EventReceived;
+            var spinAngGoCount = 0;
+            do
+            {
+                spinAngGoCount++;
+                Console.WriteLine(spinAngGoCount+ " " );
+
+                _spinAndGoGame = new SpinAndGoGame(1, _consoleNotifier, spinAngGoCount);
+                _displayer.SetupGameDisplay(_spinAndGoGame);
+
+                _spinAndGoGame.Setup(users);
+
+                await _logger.LogMessageAsync("Setting up interface");
+
+                var winner = await _spinAndGoGame.LaunchAsync();
+
+                winner.Earn(_spinAndGoGame.Prize);
+
+            } while (users.All(user => user.Cash - _spinAndGoGame.Fee>= 0) && spinAngGoCount < _simulationCount);
+
+            _displayer.SetConsoleDisplayState(true);
+            _displayer.UpdateDisplay();
+        }
+
         public void Setup(ConsoleNotifier notifier)
         {
-            _table = new Table(10, 20, 1000, 3, notifier);
 
-            _displayer.SetupDisplay(_table);
-            _eventManager.EventReceived += _eventManager_EventReceived;
-
-            _table.Join("Tommy", new ConsolePlayerController(_displayer));
-            _table.Join("Ratchet", new ConsolePlayerController(_displayer));
-            _table.Join("Corail", new ConsolePlayerController(_displayer));
-
-            _logger.LogMessageAsync("Setting up interface");
-
-            _table.Start();
         }
 
         private void _eventManager_EventReceived(string eventMessage)
