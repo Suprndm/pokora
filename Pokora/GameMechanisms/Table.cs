@@ -22,7 +22,7 @@ namespace Pokora.GameMechanisms
         public int SmallBlind { get; }
         public int BigBlind { get; }
         public int SeatsCount { get; }
-        public double InitialCash { get; }
+        public double InitialCash { get; private set; }
         private IList<Player> _satPlayers;
         public IList<Player> Players { get; set; }
         private int _dealerIndex;
@@ -40,7 +40,23 @@ namespace Pokora.GameMechanisms
             if (Players.Any(p => p.Name == userName))
                 throw new Exception($"{userName} is already in the room");
 
-            var player = new Player(userName, InitialCash, controller, _notifier);
+            //if (userName == "Tommy")
+            //{
+            //    InitialCash = 0;
+            //}
+
+            //if (userName == "Ratchet")
+            //{
+            //    InitialCash = 10;
+            //}
+
+            //if (userName == "Corail")
+            //{
+            //    InitialCash = 2000;
+            //}
+
+
+            var player = new Player(userName, InitialCash, controller, _notifier , this);
             Players.Add(player);
             _satPlayers.Add(player);
 

@@ -197,5 +197,65 @@ namespace Pokora.Tests
                 Assert.AreEqual(hands[i], ordererResults[i].Key, $"{hands[i]} expected but {ordererResults[i].Key} actual");
             }
         }
+
+        [TestCase("2D 2H", "2D 2H")]
+        [TestCase("2D 6H 2H", "2D 2H 6H")]
+        [TestCase("8D 6H 2H 8S", "8D 8S 6H 2H")]
+        public void ShouldEvalOnePairWithLessThan5Cards(string str, string expectedCombination)
+        {
+            var cards = CardsBuilder.BuildCardsFromString(str);
+
+            var combination = _combinationEvaluator.EvaluateCards(cards);
+            var combinationString = CardsBuilder.BuildStringFromCards(combination.Cards);
+
+            Assert.AreEqual(CombinationType.OnePair, combination.Type);
+            Assert.AreEqual(expectedCombination, combinationString);
+        }
+
+        [TestCase("8D 6H 8H 6S", "8D 8H 6H 6S")]
+        public void ShouldEvalTwoPairsWith4Cards(string str, string expectedCombination)
+        {
+            var cards = CardsBuilder.BuildCardsFromString(str);
+
+            var combination = _combinationEvaluator.EvaluateCards(cards);
+            var combinationString = CardsBuilder.BuildStringFromCards(combination.Cards);
+
+            Assert.AreEqual(CombinationType.TwoPair, combination.Type);
+            Assert.AreEqual(expectedCombination, combinationString);
+        }
+
+        [TestCase("2D 2H 2S", "2D 2H 2S")]
+        [TestCase("2D AH 2H 2S", "2D 2H 2S AH")]
+        public void ShouldEvalThreeOfAKindWithLessThan5Cards(string str, string expectedCombination)
+        {
+            var cards = CardsBuilder.BuildCardsFromString(str);
+
+            var combination = _combinationEvaluator.EvaluateCards(cards);
+            var combinationString = CardsBuilder.BuildStringFromCards(combination.Cards);
+
+            Assert.AreEqual(CombinationType.ThreeOfAKind, combination.Type);
+            Assert.AreEqual(expectedCombination, combinationString);
+        }
+
+        [TestCase("2D 2C 2H 2S", "2D 2C 2H 2S")]
+        public void ShouldEvalFourOfAKindWith4Cards(string str, string expectedCombination)
+        {
+            var cards = CardsBuilder.BuildCardsFromString(str);
+
+            var combination = _combinationEvaluator.EvaluateCards(cards);
+            var combinationString = CardsBuilder.BuildStringFromCards(combination.Cards);
+
+            Assert.AreEqual(CombinationType.FourOfAKind, combination.Type);
+            Assert.AreEqual(expectedCombination, combinationString);
+        }
+
+        [TestCase("AD TS")]
+        public void QuickTester(string str)
+        {
+            var cards = CardsBuilder.BuildCardsFromString(str);
+
+            var combination = _combinationEvaluator.EvaluateCards(cards);
+
+        }
     }
 }

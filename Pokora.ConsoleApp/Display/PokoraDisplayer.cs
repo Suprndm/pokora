@@ -12,6 +12,8 @@ namespace Pokora.ConsoleApp.Display
         private SpinAndGoGame _spinAndGoGame;
         private bool _consoleDisplayEnabled = true;
         private IList<string> _events;
+        private bool _isBusy;
+        private bool _redrawLater;
 
         public void SetupDisplay(IList<User> users)
         {
@@ -47,6 +49,14 @@ namespace Pokora.ConsoleApp.Display
 
         public void UpdateDisplay()
         {
+            if (_isBusy)
+            {
+                _redrawLater = true;
+                return;
+            }
+
+            _isBusy = true;
+
             if (_consoleDisplayEnabled)
                 Console.Clear();
 
@@ -62,6 +72,14 @@ namespace Pokora.ConsoleApp.Display
             DrawTable(_spinAndGoGame.Table);
 
             DrawEvents();
+
+            _isBusy = false;
+
+            if (_redrawLater)
+            {
+                _redrawLater = false;
+                UpdateDisplay();
+            }
         }
 
         private void DrawGame()

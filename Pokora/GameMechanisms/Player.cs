@@ -9,16 +9,18 @@ namespace Pokora.GameMechanisms
         private readonly INotifier _notifier;
         public event Action<PlayerAction> ActionGiven;
         private readonly Guid _guid;
+        private readonly Table _table;
 
-        public Player(string name, double cash, IPlayerController controller, INotifier notifier)
+        public Player(string name, double cash, IPlayerController controller, INotifier notifier, Table table)
         {
             _guid = Guid.NewGuid();
 
             _notifier = notifier;
+            _table = table;
             Name = name;
             Cash = cash;
             Controller = controller;
-            Controller.LinkPlayer(this);
+            Controller.LinkPlayer(this, table);
             Controller.ActionReceived += Controller_ActionReceived;
         }
 
@@ -96,7 +98,7 @@ namespace Pokora.GameMechanisms
         {
             ValidateAmount(amount);
 
-            if (Cash < amount)
+            if (Cash <= amount)
             {
                 State = PlayerState.AllIn;
                 Bid += Cash;

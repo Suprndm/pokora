@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pokora.GameMechanisms;
@@ -42,23 +43,32 @@ namespace Pokora.SpinAndGo
         {
             return Task.Run(async () =>
              {
-                 Table = new Table(10, 20, 1000, 3, _notifier);
-
-                 foreach (var user in Users)
+                 try
                  {
-                     Table.Join(user.Name, user.Controller);
-                     user.Pay(Fee);
+                     Table = new Table(10, 20, 1000, 3, _notifier);
+
+                     foreach (var user in Users)
+                     {
+                         Table.Join(user.Name, user.Controller);
+                         user.Pay(Fee);
+                     }
+
+                     Table.TableFinished += _table_TableFinished;
+                     Table.Start();
+
+                     while (_tableEnded == false)
+                     {
+                         await Task.Delay(2000);
+                     }
+
+                     return Users.Single(user => user.Name == _winningPlayer.Name);
                  }
-
-                 Table.TableFinished += _table_TableFinished;
-                 Table.Start();
-
-                 while (_tableEnded == false)
+                 catch (Exception e)
                  {
-                     await Task.Delay(2000);
+                     Console.WriteLine(e);
+                     throw;
                  }
-
-                 return Users.Single(user => user.Name == _winningPlayer.Name);
+             
              });
         }
 

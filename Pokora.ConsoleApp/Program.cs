@@ -9,6 +9,7 @@ namespace Pokora.ConsoleApp
         static void Main(string[] args)
         {
             MainAsync().Wait();
+            Console.Read();
         }
 
         static async Task MainAsync()

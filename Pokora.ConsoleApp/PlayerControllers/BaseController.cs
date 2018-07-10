@@ -7,6 +7,7 @@ namespace Pokora.ConsoleApp.PlayerControllers
     public abstract class BaseController : IPlayerController
     {
         protected Player Player;
+        protected Table Table;
         protected IList<PlayerAction> AvailableActions;
 
         public event Action<PlayerAction> ActionReceived;
@@ -23,8 +24,9 @@ namespace Pokora.ConsoleApp.PlayerControllers
             AvailableActions = actions;
         }
 
-        public void LinkPlayer(Player player)
+        public void LinkPlayer(Player player, Table table)
         {
+            Table = table;
             Player = player;
         }
     }

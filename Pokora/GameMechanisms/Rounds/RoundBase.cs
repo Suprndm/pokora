@@ -87,7 +87,7 @@ namespace Pokora.GameMechanisms.Rounds
             while (nextPlayer.State == PlayerState.Fold || nextPlayer.State == PlayerState.AllIn)
             {
                 nextPlayer =
-                    Players[(Players.IndexOf(_currentPlayer) + 1) % Players.Count];
+                    Players[(Players.IndexOf(nextPlayer) + 1) % Players.Count];
             }
 
             _currentPlayer = nextPlayer;
@@ -155,6 +155,10 @@ namespace Pokora.GameMechanisms.Rounds
                     }
                     else
                     {
+                        if (player.Cash == 0)
+                        {
+
+                        }
                         availableActions.Add(new PlayerAction(player, PlayerState.Check, 0, 0));
                         availableActions.Add(new PlayerAction(player, PlayerState.Bet, SmallBlind, player.Cash));
                         availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash));
@@ -175,6 +179,11 @@ namespace Pokora.GameMechanisms.Rounds
 
             if (playersRoundOverCount == Players.Count - 1)
             {
+                var lastPlayer = Players.Single(player => !player.IsRoundOver(maxBid));
+
+                if (lastPlayer.State == PlayerState.None && lastPlayer.Bid == maxBid)
+                    return true;
+
                 if (Players.Count(player =>
                         player.State == PlayerState.Fold || (player.State == PlayerState.AllIn && player.Bid == 0)) ==
                     Players.Count - 1)

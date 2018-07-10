@@ -10,6 +10,6 @@ namespace Pokora
        event Action<PlayerAction> ActionReceived;
         void NotifyTurn();
         void SendAvailableActions(IList<PlayerAction> actions);
-        void LinkPlayer(Player player);
+        void LinkPlayer(Player player, Table table);
     }
 }
