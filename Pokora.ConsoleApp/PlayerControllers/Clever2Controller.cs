@@ -32,8 +32,17 @@ namespace Pokora.ConsoleApp.PlayerControllers
             }
             else if(debtRatio <= 0.2)
             {
-                SendAction(new PlayerAction(Player, PlayerState.Call, 0, 0,
-                    AvailableActions.Single(action => action.State == PlayerState.Call).Amount));
+                if (AvailableActions.Any(action => action.State == PlayerState.Call))
+                {
+                    SendAction(new PlayerAction(Player, PlayerState.Call, 0, 0,
+                        AvailableActions.Single(action => action.State == PlayerState.Call).Amount));
+                }
+                else if (AvailableActions.Any(action => action.State == PlayerState.Bet))
+                {
+                    SendAction(new PlayerAction(Player, PlayerState.Bet, 0, 0,
+                        AvailableActions.Single(action => action.State == PlayerState.Bet).Lower*2));
+                }
+ 
             }
             else
             {

@@ -54,11 +54,13 @@ namespace Pokora.SpinAndGo
                      }
 
                      Table.TableFinished += _table_TableFinished;
+                     _tableEnded = false;
+
                      Table.Start();
 
                      while (_tableEnded == false)
                      {
-                         await Task.Delay(2000);
+                         await Task.Delay(20);
                      }
 
                      return Users.Single(user => user.Name == _winningPlayer.Name);
@@ -74,10 +76,10 @@ namespace Pokora.SpinAndGo
 
         private void _table_TableFinished(Player player)
         {
-            _tableEnded = true;
             _winningPlayer = player;
-            _notifier.SpinAndGoWonBy(player);
             Table.Dispose();
+            _notifier.SpinAndGoWonBy(player);
+            _tableEnded = true;
         }
 
         private double GetMultiplier()

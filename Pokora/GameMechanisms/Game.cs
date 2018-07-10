@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Pokora.GameMechanisms.Rounds;
 using Pokora.Poker;
 
@@ -40,20 +41,23 @@ namespace Pokora.GameMechanisms
 
         public void Start(IList<Player> players, Player dealer)
         {
-            _notifier.GameStartedWith(players.Select(p => p.Name).ToList());
+            Task.Factory.StartNew(() =>
+            {
+                _notifier.GameStartedWith(players.Select(p => p.Name).ToList());
 
-            Deck.Regroup();
-            Deck.Shuffle();
+                Deck.Regroup();
+                Deck.Shuffle();
 
 
-            _notifier.DeckShuffled();
+                _notifier.DeckShuffled();
 
-            OrderPlayers(players, dealer);
+                OrderPlayers(players, dealer);
 
-            ResetPlayersState();
+                ResetPlayersState();
 
-            _currentRound = _rounds[0];
-            StartRound();
+                _currentRound = _rounds[0];
+                StartRound();
+            });
         }
 
         public void TransmitAction(PlayerAction playerAction)

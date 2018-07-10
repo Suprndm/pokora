@@ -249,7 +249,7 @@ namespace Pokora.Tests
             Assert.AreEqual(expectedCombination, combinationString);
         }
 
-        [TestCase("AD TS")]
+        [TestCase("8H QH TH 9H KH AH JH")]
         public void QuickTester(string str)
         {
             var cards = CardsBuilder.BuildCardsFromString(str);
