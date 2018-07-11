@@ -21,7 +21,7 @@ namespace Pokora.Tests
         [Test]
         public void ShouldGiveANumberBetweenOneAndZero()
         {
-            var criticality = _cashCriticalityEvaluator.EvaluateCashCriticality(500, 100, 200, 500);
+            var criticality = _cashCriticalityEvaluator.EvaluateCashCriticality(500, 100, 200, 500, 1300);
 
             Assert.IsTrue(criticality <= 1);
             Assert.IsTrue(criticality >= 0);

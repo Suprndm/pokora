@@ -6,7 +6,7 @@ namespace Pokora.IA.Risk
 {
     public class CashCriticalityEvaluator
     {
-        public double EvaluateCashCriticality(double cash, double bid, double maxBid, double cashInvested)
+        public double EvaluateCashCriticality(double cash, double bid, double maxBid, double cashInvested, double winableAmount)
         {
             return 0;
         }
