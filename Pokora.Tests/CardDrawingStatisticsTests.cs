@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using Pokora.Cards;
+using Pokora.IA.Quality;
 using Pokora.Poker;
 
 namespace Pokora.Tests
@@ -15,6 +17,58 @@ namespace Pokora.Tests
         public void Setup()
         {
             _combinationEvaluator = new CombinationEvaluator();
+        }
+
+        [Test]
+        public void ScoreRangeCalculator()
+        {
+            int simulationCount = 500000;
+            var scoreResults = new Dictionary<int, IList<double>>();
+            var scoreRanges = new List<ScoreRange>();
+
+            var deck = new Deck();
+            var cards = new List<Card>();
+            var hand = new List<Card>();
+            for (int i = 3; i < 4; i++)
+            {
+                var numberOfCards = i + 2;
+                scoreResults.Add(numberOfCards, new List<double>());
+
+                for (int u = 0; u < simulationCount; u++)
+                {
+                    deck.Regroup();
+                    deck.Shuffle();
+
+                    cards.Clear();
+                    hand.Clear();
+                    for (int j = 0; j < numberOfCards; j++)
+                    {
+                        cards.Add(deck.Draw());
+                    }
+
+                    var cardCombination = _combinationEvaluator.EvaluateCards(cards);
+
+
+
+                    scoreResults[numberOfCards].Add(cardCombination.Score);
+                }
+            }
+
+            var str = String.Join("\n", scoreResults.Values.First().ToList().OrderBy(v => v).Select(v=>v.ToString()));
+
+
+            //foreach (var keyValuePair in scoreResults.ToList())
+            //{
+            //    var max = keyValuePair.Value.OrderByDescending(v => v).First();
+            //    var min = keyValuePair.Value.OrderByDescending(v => v).Last();
+            //    scoreRanges.Add(new ScoreRange(keyValuePair.Key, min, max));
+            //}
+
+            var logPath = System.IO.Path.GetTempFileName();
+            var logFile = System.IO.File.Create(logPath);
+            var logWriter = new System.IO.StreamWriter(logFile);
+            logWriter.WriteLine(str);
+            logWriter.Dispose();
         }
 
         [Test]
@@ -55,8 +109,8 @@ namespace Pokora.Tests
 
             foreach (var occurence in occurencies)
             {
-                var proba = (double) occurence.Value / simulationCount;
-                results.Add($"{occurence.Key.ToString()} : {Math.Round(proba * 100,3)}%");
+                var proba = (double)occurence.Value / simulationCount;
+                results.Add($"{occurence.Key.ToString()} : {Math.Round(proba * 100, 3)}%");
 
                 probabilities.Add(occurence.Key, proba);
             }
@@ -75,7 +129,7 @@ namespace Pokora.Tests
 
         private void CheckProba(CombinationType combinationType, double currentProba, double low, double high)
         {
-            Assert.IsTrue(currentProba >= low && currentProba<= high, $"{combinationType.ToString()} : {currentProba} is not betwen {low} and {high}");
+            Assert.IsTrue(currentProba >= low && currentProba <= high, $"{combinationType.ToString()} : {currentProba} is not betwen {low} and {high}");
         }
 
 
@@ -107,7 +161,7 @@ namespace Pokora.Tests
             CardCombination previousCombination = null;
             foreach (var cardCombination in cardCombinations)
             {
-                if ((int) cardCombination.Type > previousCombinationType)
+                if ((int)cardCombination.Type > previousCombinationType)
                 {
                     var cardsString = CardsBuilder.BuildStringFromCards(cardCombination.Cards);
                     var previousCardsString = CardsBuilder.BuildStringFromCards(cardCombination.Cards);
