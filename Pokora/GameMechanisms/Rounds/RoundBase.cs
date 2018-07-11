@@ -173,15 +173,15 @@ namespace Pokora.GameMechanisms.Rounds
         {
             var maxBid = Players.Max(player => player.Bid);
             var playersRoundOverCount = Players.Count(player => player.IsRoundOver(maxBid));
-
             if (playersRoundOverCount == Players.Count)
                 return true;
+
 
             if (playersRoundOverCount == Players.Count - 1)
             {
                 var lastPlayer = Players.Single(player => !player.IsRoundOver(maxBid));
 
-                if (lastPlayer.State == PlayerState.None && lastPlayer.Bid == maxBid)
+                if (lastPlayer.State == PlayerState.None && lastPlayer.Bid == maxBid && Players.Count(player=>player.IsOut())== Players.Count - 1)
                     return true;
 
                 if (Players.Count(player =>

@@ -75,6 +75,14 @@ namespace Pokora.GameMechanisms
         private double _cash;
         private PlayerHand _hand;
 
+        public bool IsOut()
+        {
+            if (State == PlayerState.Fold) return true;
+            if (State == PlayerState.AllIn) return true;
+
+            return false;
+        }
+
         public bool IsRoundOver(double maxBid)
         {
             if (State == PlayerState.Fold) return true;

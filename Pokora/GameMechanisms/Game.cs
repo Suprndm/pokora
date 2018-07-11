@@ -132,13 +132,13 @@ namespace Pokora.GameMechanisms
                 if (allInPlayer.Bid > 0)
                 {
                     var sidePot = new Pot();
-                    var bid = allInPlayer.TakeAllBid();
-                    sidePot.Earn(bid);
+                    var allinBid = allInPlayer.TakeAllBid();
+                    sidePot.Earn(allinBid);
                     sidePot.DeclareParticipant(allInPlayer);
                     playersToCompute.Remove(allInPlayer);
                     foreach (var player in playersToCompute)
                     {
-                        bid = player.TakePartOfTheBid(bid);
+                        var bid = player.TakePartOfTheBid(allinBid);
                         sidePot.Earn(bid);
                         if (player.State != PlayerState.Fold)
                             sidePot.DeclareParticipant(player);
