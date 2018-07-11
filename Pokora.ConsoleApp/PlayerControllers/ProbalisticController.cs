@@ -9,24 +9,28 @@ namespace Pokora.ConsoleApp.PlayerControllers
     {
         private readonly QualityEvaluator _qualityEvaluator;
         private readonly DecisionEvaluator _decisionEvaluator;
-        private readonly RiskEvaluator _riskEvaluator;
+        private readonly CashCriticalityEvaluator _cashCriticalityEvaluator;
 
         public ProbalisticController()
         {
             _qualityEvaluator = new QualityEvaluator();
             _decisionEvaluator = new DecisionEvaluator();
-            _riskEvaluator = new RiskEvaluator();
+            _cashCriticalityEvaluator = new CashCriticalityEvaluator();
         }
 
         public override void NotifyTurn()
         {
+            var totalPlayerInvestedInPots = Table.CurrentGame.Pots
+                .Where(pot => pot.Participants.Contains(Player))
+                .Sum(pot => pot.Amount / pot.Participants.Count);
+
             var maxBid = Table.Players.Max(player => player.Bid);
 
             var quality = _qualityEvaluator.EvalQualityScore(Player.Hand, Table.CurrentGame.Cards.Cards.ToList());
 
-            var risk = _riskEvaluator.EvaluateRisk(Player.Cash, Player.Bid, maxBid);
+            var cashCriticality = _cashCriticalityEvaluator.EvaluateCashCriticality(Player.Cash, Player.Bid, maxBid, totalPlayerInvestedInPots);
 
-            var action = _decisionEvaluator.Decide(AvailableActions, quality, risk);
+            var action = _decisionEvaluator.Decide(AvailableActions, quality, cashCriticality);
 
             SendAction(action);
         }

@@ -5,7 +5,7 @@ namespace Pokora.IA.Decision
 {
     public class DecisionEvaluator
     {
-        public PlayerAction Decide(IList<PlayerAction> actions, double quality, double risk)
+        public PlayerAction Decide(IList<PlayerAction> actions, double quality, double cashCriticality)
         {
             return actions.First();
         }
