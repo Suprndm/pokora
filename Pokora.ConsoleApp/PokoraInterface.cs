@@ -44,7 +44,7 @@ namespace Pokora.ConsoleApp
             for (int i = 0; i < 100000; i++)
             {
 
-                Learner.Instance.GenerateNewVariableSet();
+                Learner.Instance.GenerateNewElipticAreas();
 
                 Console.WriteLine($"New SET for iteration :{i}");
                 try
@@ -118,7 +118,7 @@ namespace Pokora.ConsoleApp
                     Console.WriteLine(e);
                 }
 
-                if (i % 500 == 0)
+                if (i % 50 == 0)
                 {
                     Learner.Instance.DumpResults(i);
                 }

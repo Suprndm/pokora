@@ -16,63 +16,106 @@ namespace Pokora.IA
 
         private Learner()
         {
-            GenerateNewVariableSet();
+            GenerateNewElipticAreas();
             _tableResults = new List<TableResult>();
         }
 
-        private IDictionary<PlayerState, double> _variableSet;
+        private IDictionary<PlayerState, EllipticArea> _ellipticAreas;
         private IList<TableResult> _tableResults;
 
-        public IDictionary<PlayerState, double> GetVariableSet()
+        public IDictionary<PlayerState, EllipticArea> GetElipticAreas()
         {
-            return _variableSet;
+            return _ellipticAreas;
         }
 
-        public void GenerateNewVariableSet()
+        public void GenerateNewElipticAreas()
         {
-            _variableSet = new Dictionary<PlayerState, double>
+            _ellipticAreas = new Dictionary<PlayerState, EllipticArea>
             {
-                {PlayerState.Fold ,Randomizer.Instance.Random.Next(1000)/1000d },
-                {PlayerState.Check ,Randomizer.Instance.Random.Next(1000)/1000d},
-                {PlayerState.Call ,Randomizer.Instance.Random.Next(1000)/1000d },
-                {PlayerState.Bet ,Randomizer.Instance.Random.Next(1000)/1000d},
-                {PlayerState.Raise ,Randomizer.Instance.Random.Next(1000)/1000d },
-                {PlayerState.AllIn ,Randomizer.Instance.Random.Next(1000)/1000d },
+                {PlayerState.Fold, GenerateRandomElipticArea() },
+                {PlayerState.Check , GenerateRandomElipticArea() },
+                {PlayerState.Call , GenerateRandomElipticArea() },
+                {PlayerState.Bet , GenerateRandomElipticArea() },
+                {PlayerState.Raise, GenerateRandomElipticArea() },
+                {PlayerState.AllIn, GenerateRandomElipticArea() },
             };
- 
-             //_variableSet = new Dictionary<PlayerState, double>
-             //{
-             //    {PlayerState.Fold ,0.18},
-             //    {PlayerState.Check ,0.344},
-             //    {PlayerState.Call ,0.605 },
-             //    {PlayerState.Bet ,0.499},
-             //    {PlayerState.Raise ,0.86},
-             //    {PlayerState.AllIn ,0.183},
-             //};
+
+            //_variableSet = new Dictionary<PlayerState, double>
+            //{
+            //    {PlayerState.Fold ,0.18},
+            //    {PlayerState.Check ,0.344},
+            //    {PlayerState.Call ,0.605 },
+            //    {PlayerState.Bet ,0.499},
+            //    {PlayerState.Raise ,0.86},
+            //    {PlayerState.AllIn ,0.183},
+            //};
+        }
+
+        private EllipticArea GenerateRandomElipticArea()
+        {
+            return new EllipticArea()
+            {
+                A = Randomizer.Instance.Random.Next(1000) / 1000d,
+                B = Randomizer.Instance.Random.Next(1000) / 1000d,
+                R = Randomizer.Instance.Random.Next(500) / 1000d,
+                U = Randomizer.Instance.Random.Next(1000) / 1000d,
+                V = Randomizer.Instance.Random.Next(1000) / 1000d,
+            };
         }
 
         public void SaveTableResults(double winRate)
         {
-            _tableResults.Add(new TableResult() {VariableSet = _variableSet, WinRate = winRate});
+            _tableResults.Add(new TableResult() { EllipticAreas = _ellipticAreas, WinRate = winRate });
         }
 
         public void DumpResults(int iteration)
         {
-            var logPath = System.IO.Path.GetTempFileName() + iteration+".csv";
+            var logPath = System.IO.Path.GetTempFileName() + iteration + ".csv";
             var logFile = System.IO.File.Create(logPath);
             var logWriter = new System.IO.StreamWriter(logFile);
 
             var csvWriter = new CsvWriter(logWriter);
             csvWriter.Configuration.Delimiter = ";";
-            csvWriter.WriteRecords(_tableResults.Select(r=> new
+            csvWriter.WriteRecords(_tableResults.Select(r => new
             {
-                WinRate= r.WinRate,
-                Fold = r.VariableSet[PlayerState.Fold],
-                Check = r.VariableSet[PlayerState.Check],
-                Call = r.VariableSet[PlayerState.Call],
-                Bet = r.VariableSet[PlayerState.Bet],
-                Raise = r.VariableSet[PlayerState.Raise],
-                AllIn = r.VariableSet[PlayerState.AllIn],
+                WinRate = r.WinRate,
+
+                Fold_A = r.EllipticAreas[PlayerState.Fold].A,
+                Fold_B = r.EllipticAreas[PlayerState.Fold].B,
+                Fold_R = r.EllipticAreas[PlayerState.Fold].R,
+                Fold_U = r.EllipticAreas[PlayerState.Fold].U,
+                Fold_V = r.EllipticAreas[PlayerState.Fold].V,
+
+                Check_A = r.EllipticAreas[PlayerState.Check].A,
+                Check_B = r.EllipticAreas[PlayerState.Check].B,
+                Check_R = r.EllipticAreas[PlayerState.Check].R,
+                Check_U = r.EllipticAreas[PlayerState.Check].U,
+                Check_V = r.EllipticAreas[PlayerState.Check].V,
+
+                Call_A = r.EllipticAreas[PlayerState.Call].A,
+                Call_B = r.EllipticAreas[PlayerState.Call].B,
+                Call_R = r.EllipticAreas[PlayerState.Call].R,
+                Call_U = r.EllipticAreas[PlayerState.Call].U,
+                Call_V = r.EllipticAreas[PlayerState.Call].V,
+
+
+                Bet_A = r.EllipticAreas[PlayerState.Bet].A,
+                Bet_B = r.EllipticAreas[PlayerState.Bet].B,
+                Bet_R = r.EllipticAreas[PlayerState.Bet].R,
+                Bet_U = r.EllipticAreas[PlayerState.Bet].U,
+                Bet_V = r.EllipticAreas[PlayerState.Bet].V,
+
+                Raise_A = r.EllipticAreas[PlayerState.Raise].A,
+                Raise_B = r.EllipticAreas[PlayerState.Raise].B,
+                Raise_R = r.EllipticAreas[PlayerState.Raise].R,
+                Raise_U = r.EllipticAreas[PlayerState.Raise].U,
+                Raise_V = r.EllipticAreas[PlayerState.Raise].V,
+
+                Allin_A = r.EllipticAreas[PlayerState.AllIn].A,
+                Allin_B = r.EllipticAreas[PlayerState.AllIn].B,
+                Allin_R = r.EllipticAreas[PlayerState.AllIn].R,
+                Allin_U = r.EllipticAreas[PlayerState.AllIn].U,
+                Allin_V = r.EllipticAreas[PlayerState.AllIn].V,
             }));
 
             logWriter.Dispose();

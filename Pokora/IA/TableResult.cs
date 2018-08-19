@@ -6,6 +6,6 @@ namespace Pokora.IA
     public class TableResult
     {
         public double WinRate { get; set; }
-        public IDictionary<PlayerState, double> VariableSet { get; set; }
+        public IDictionary<PlayerState, EllipticArea> EllipticAreas { get; set; }
     }
 }
