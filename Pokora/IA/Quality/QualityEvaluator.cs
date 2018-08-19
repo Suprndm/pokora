@@ -40,18 +40,32 @@ namespace Pokora.IA
             }
             else
             {
-                var tableCardsQuality = ComputeQualityOfCards(tableCards);
                 var set = tableCards.ToList();
                 set.Add(playerHand.Card1);
                 set.Add(playerHand.Card2);
 
-                var setQuality = ComputeQualityOfCards(set);
 
-                var broughtQuality = setQuality - tableCardsQuality;
+                var broughtQuality = ComputeBroughtQuality(tableCards, set);
+
+                if (broughtQuality < 0)
+                {
+
+                }
                 return broughtQuality;
             }
         }
 
+        private double ComputeBroughtQuality(IList<Card> tableCards, IList<Card> set)
+        {
+            var tableCardsScore = Math.Log10(_combinationEvaluator.EvaluateCards(tableCards.ToList()).Score);
+            var setCardsScore = Math.Log10(_combinationEvaluator.EvaluateCards(set.ToList()).Score);
+
+            var scoreDiff = setCardsScore - tableCardsScore;
+            var scoraRange = _scoreRanges.Single(range => range.CardsCount == 5);
+            var quality = Math.Round((scoreDiff) / (scoraRange.Max - scoraRange.Min), 3);
+
+            return quality;
+        }
 
         private double ComputeQualityOfCards(IList<Card> cards)
         {
@@ -59,7 +73,7 @@ namespace Pokora.IA
             var cardsScore = Math.Log10(cardsCombination.Score);
 
             var scoraRange = _scoreRanges.Single(range => range.CardsCount == cardsCombination.Cards.Count);
-            var quality = Math.Round((cardsScore - scoraRange.Min) /(scoraRange.Max- scoraRange.Min), 3);
+            var quality = Math.Round((cardsScore - scoraRange.Min) / (scoraRange.Max - scoraRange.Min), 3);
 
             return quality;
         }

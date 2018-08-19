@@ -22,6 +22,20 @@ namespace Pokora.Tests
         }
 
         [Test]
+        public void QualityQuickTest()
+        {
+            var cards = "2S KH 3H";
+            var hands = "6H TD" ;
+            var playerCards = CardsBuilder.BuildCardsFromString(hands).ToList();
+
+            var cardslist = CardsBuilder.BuildCardsFromString(cards).ToList();
+
+            var playerHand = new PlayerHand(playerCards[0], playerCards[1]);
+
+            var quality = _qualityEvaluator.EvalQualityScore(playerHand, new List<Card>());
+        }
+
+        [Test]
         public void PairOfAceShouldBe1()
         {
             var str = "AH AS";
