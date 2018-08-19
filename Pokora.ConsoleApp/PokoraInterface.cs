@@ -118,7 +118,7 @@ namespace Pokora.ConsoleApp
                     Console.WriteLine(e);
                 }
 
-                if (i % 10 == 0)
+                if (i % 500 == 0)
                 {
                     Learner.Instance.DumpResults(i);
                 }

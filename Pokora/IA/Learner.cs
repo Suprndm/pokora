@@ -39,16 +39,16 @@ namespace Pokora.IA
                 {PlayerState.Raise ,Randomizer.Instance.Random.Next(1000)/1000d },
                 {PlayerState.AllIn ,Randomizer.Instance.Random.Next(1000)/1000d },
             };
-
-            //_variableSet = new Dictionary<PlayerState, double>
-            //{
-            //    {PlayerState.Fold ,0.589},
-            //    {PlayerState.Check ,0.699},
-            //    {PlayerState.Call ,0.984 },
-            //    {PlayerState.Bet ,0.79},
-            //    {PlayerState.Raise ,0.6},
-            //    {PlayerState.AllIn ,0.413},
-            //};
+ 
+             //_variableSet = new Dictionary<PlayerState, double>
+             //{
+             //    {PlayerState.Fold ,0.18},
+             //    {PlayerState.Check ,0.344},
+             //    {PlayerState.Call ,0.605 },
+             //    {PlayerState.Bet ,0.499},
+             //    {PlayerState.Raise ,0.86},
+             //    {PlayerState.AllIn ,0.183},
+             //};
         }
 
         public void SaveTableResults(double winRate)
