@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Pokora.GameMechanisms;
-
-namespace Pokora.IA.Risk
+﻿namespace Pokora.IA.Risk
 {
     public class CashCriticalityEvaluator
     {
         public double EvaluateCashCriticality(double cash, double bid, double maxBid, double cashInvested, double winableAmount)
         {
-            return 0;
+            return Randomizer.Instance.Random.Next(1000)/1000d;
         }
     }
 }

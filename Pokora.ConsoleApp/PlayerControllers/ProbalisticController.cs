@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Pokora.IA;
 using Pokora.IA.Decision;
 using Pokora.IA.Risk;
@@ -20,23 +21,31 @@ namespace Pokora.ConsoleApp.PlayerControllers
 
         public override void NotifyTurn()
         {
-            var totalPlayerInvestedInPots = Table.CurrentGame.Pots
-                .Where(pot => pot.Participants.Contains(Player))
-                .Sum(pot => pot.Amount / pot.Participants.Count);
+            try
+            {
+                var totalPlayerInvestedInPots = Table.CurrentGame.Pots
+                    .Where(pot => pot.Participants.Contains(Player))
+                    .Sum(pot => pot.Amount / pot.Participants.Count);
 
-            var winableAmount = Table.CurrentGame.Pots
-                .Where(pot => pot.Participants.Contains(Player))
-                .Sum(pot => pot.Amount);
+                var winableAmount = Table.CurrentGame.Pots
+                    .Where(pot => pot.Participants.Contains(Player))
+                    .Sum(pot => pot.Amount);
 
-            var maxBid = Table.Players.Max(player => player.Bid);
+                var maxBid = Table.Players.Max(player => player.Bid);
 
-            var quality = _qualityEvaluator.EvalQualityScore(Player.Hand, Table.CurrentGame.Cards.Cards.ToList());
+                var quality = _qualityEvaluator.EvalQualityScore(Player.Hand, Table.CurrentGame.Cards.Cards.ToList());
 
-            var cashCriticality = _cashCriticalityEvaluator.EvaluateCashCriticality(Player.Cash, Player.Bid, maxBid, totalPlayerInvestedInPots, winableAmount);
+                var cashCriticality = _cashCriticalityEvaluator.EvaluateCashCriticality(Player.Cash, Player.Bid, maxBid, totalPlayerInvestedInPots, winableAmount);
 
-            var action = _decisionEvaluator.Decide(AvailableActions, quality, cashCriticality);
+                var action = _decisionEvaluator.Decide(AvailableActions, quality, cashCriticality);
 
-            SendAction(action);
+                SendAction(action);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+          
         }
     }
 }
