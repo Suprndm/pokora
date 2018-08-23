@@ -109,7 +109,7 @@ namespace Pokora.GameMechanisms
 
         private Player SetupDealer()
         {
-            _dealerIndex = Randomizer.Instance.Random.Next(SeatsCount);
+            _dealerIndex = StaticRandom.Rand(SeatsCount);
             _notifier.DealerPlaced(Players[_dealerIndex].Name);
             return Players[_dealerIndex];
         }

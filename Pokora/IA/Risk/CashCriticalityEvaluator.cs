@@ -5,13 +5,13 @@ namespace Pokora.IA.Risk
     {
         public double EvaluateCashCriticality(double cash, double bid, double maxBid, double cashInvested, double winableAmount)
         {
-            double bettingRisk = bid / cash;
+            double bettingRisk = (maxBid + cashInvested) / cash;
             double relativeGain = winableAmount / cash;
 
             double incentiveToBet = bettingRisk * relativeGain;
             double normalizedIncentive = Math.Exp(incentiveToBet) / (1 + Math.Exp(incentiveToBet));
 
-            return normalizedIncentive;
+            return bettingRisk;
         }
     }
 }

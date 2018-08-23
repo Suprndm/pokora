@@ -84,7 +84,7 @@ namespace Pokora.SpinAndGo
 
         private double GetMultiplier()
         {
-            var randomInt = Randomizer.Instance.Random.Next(1000000);
+            var randomInt = StaticRandom.Rand(1000000);
 
             if (randomInt < 1)
                 return 12000;

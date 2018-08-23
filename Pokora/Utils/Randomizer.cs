@@ -1,18 +1,18 @@
 ﻿using System;
+using System.Threading;
 
 namespace Pokora
 {
-    public sealed class Randomizer
+    public static class StaticRandom
     {
-        private static readonly Lazy<Randomizer> Lazy =
-            new Lazy<Randomizer>(() => new Randomizer());
+        static int seed = Environment.TickCount;
 
-        public static Randomizer Instance => Lazy.Value;
-        public Random Random { get; }
+        static readonly ThreadLocal<Random> random =
+            new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref seed)));
 
-        private Randomizer()
+        public static int Rand(int i)
         {
-            Random = new Random();
+            return random.Value.Next(i);
         }
     }
 }

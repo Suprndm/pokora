@@ -15,6 +15,8 @@ namespace Pokora.ConsoleApp.Display
         private bool _isBusy;
         private bool _redrawLater;
 
+        public bool IsDisabled { get; set; }
+
         public void SetupDisplay(IList<User> users)
         {
             _events = new List<string>();
@@ -31,6 +33,7 @@ namespace Pokora.ConsoleApp.Display
 
         public void PushEvent(string eventMessage)
         {
+            if (_events == null || IsDisabled) return;
             _events.RemoveAt(0);
             _events.Add(eventMessage);
 
@@ -49,6 +52,8 @@ namespace Pokora.ConsoleApp.Display
 
         public void UpdateDisplay()
         {
+            if (IsDisabled) return;
+
             if (_isBusy)
             {
                 _redrawLater = true;

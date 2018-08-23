@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,11 +18,11 @@ namespace Pokora.IA
         private Learner()
         {
             GenerateNewElipticAreas();
-            _tableResults = new List<TableResult>();
+            _tableResults = new ConcurrentBag<TableResult>();
         }
 
         private IDictionary<PlayerState, EllipticArea> _ellipticAreas;
-        private IList<TableResult> _tableResults;
+        private ConcurrentBag<TableResult> _tableResults;
 
         public IDictionary<PlayerState, EllipticArea> GetElipticAreas()
         {
@@ -30,14 +31,24 @@ namespace Pokora.IA
 
         public void GenerateNewElipticAreas()
         {
+            //_ellipticAreas = new Dictionary<PlayerState, EllipticArea>
+            //{
+            //    {PlayerState.Fold, GenerateRandomElipticArea() },
+            //    {PlayerState.Check , GenerateRandomElipticArea() },
+            //    {PlayerState.Call , GenerateRandomElipticArea() },
+            //    {PlayerState.Bet , GenerateRandomElipticArea() },
+            //    {PlayerState.Raise, GenerateRandomElipticArea() },
+            //    {PlayerState.AllIn, GenerateRandomElipticArea() },
+            //};
+
             _ellipticAreas = new Dictionary<PlayerState, EllipticArea>
             {
-                {PlayerState.Fold, GenerateRandomElipticArea() },
-                {PlayerState.Check , GenerateRandomElipticArea() },
-                {PlayerState.Call , GenerateRandomElipticArea() },
-                {PlayerState.Bet , GenerateRandomElipticArea() },
-                {PlayerState.Raise, GenerateRandomElipticArea() },
-                {PlayerState.AllIn, GenerateRandomElipticArea() },
+                {PlayerState.Fold, new EllipticArea(0.149,0.199,0.31) },
+                {PlayerState.Check , new EllipticArea(0.301,0.495,0.166) },
+                {PlayerState.Call ,new EllipticArea(0.4,0.42,0.47)},
+                {PlayerState.Bet ,new EllipticArea(0.7,0.78,0.031)},
+                {PlayerState.Raise, new EllipticArea(0.245,0.618,0.389)},
+                {PlayerState.AllIn,new EllipticArea(0.300,0.334,0.1) },
             };
 
             //_variableSet = new Dictionary<PlayerState, double>
@@ -55,11 +66,11 @@ namespace Pokora.IA
         {
             return new EllipticArea()
             {
-                A = Randomizer.Instance.Random.Next(1000) / 1000d,
-                B = Randomizer.Instance.Random.Next(1000) / 1000d,
-                R = Randomizer.Instance.Random.Next(500) / 1000d,
-                U = Randomizer.Instance.Random.Next(1000) / 1000d,
-                V = Randomizer.Instance.Random.Next(1000) / 1000d,
+                A = StaticRandom.Rand(1000) / 1000d,
+                B = StaticRandom.Rand(1000) / 1000d,
+                R = StaticRandom.Rand(500) / 1000d,
+                U = StaticRandom.Rand(1000) / 1000d,
+                V = StaticRandom.Rand(1000) / 1000d,
             };
         }
 

@@ -37,6 +37,8 @@ namespace Pokora.ConsoleApp.PlayerControllers
 
                 var cashCriticality = _cashCriticalityEvaluator.EvaluateCashCriticality(Player.Cash, Player.Bid, maxBid, totalPlayerInvestedInPots, winableAmount);
 
+                Console.WriteLine($"quality {quality} , critic {cashCriticality}");
+
                 var action = _decisionEvaluator.Decide(AvailableActions, quality, cashCriticality);
 
                 SendAction(action);

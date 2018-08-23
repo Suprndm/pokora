@@ -60,7 +60,7 @@ namespace Pokora.IA.Decision
             if (distance > area.R) return 0;
             else
             {
-                return distance / area.R;
+                return 1 - distance / area.R;
             }
         }
     }

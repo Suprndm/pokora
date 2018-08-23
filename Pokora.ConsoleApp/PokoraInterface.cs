@@ -20,7 +20,6 @@ namespace Pokora.ConsoleApp
 
         private readonly ConsoleNotifier _consoleNotifier;
         private readonly EventManager _eventManager;
-        private readonly int _simulationCount = 1000;
 
         public PokoraInterface(
             Logger logger,
@@ -38,91 +37,93 @@ namespace Pokora.ConsoleApp
 
         public async Task Start()
         {
-            _displayer.SetConsoleDisplayState(false);
+            _displayer.IsDisabled = false;
+            _displayer.SetConsoleDisplayState(true);
             _eventManager.EventReceived += _eventManager_EventReceived;
 
-            for (int i = 0; i < 100000; i++)
+            Parallel.ForEach(Enumerable.Range(0, 10000000),new ParallelOptions { MaxDegreeOfParallelism = 1}, (count) =>
             {
-
                 Learner.Instance.GenerateNewElipticAreas();
 
-                Console.WriteLine($"New SET for iteration :{i}");
+                Console.WriteLine($"New SET for iteration :{count}");
                 try
                 {
 
                     double totalPaid = 0;
                     double totalEarn = 0;
 
-                    _wins = new Dictionary<User, int>();
+                    var wins = new Dictionary<User, int>();
 
                     var users = new List<User>
             {
-                new User(100)
+                new User(60)
                 {
                     Name = "Tommy",
                     Controller = new Clever2Controller()
                 },
-                new User(100)
+                new User(60)
                 {
                     Name = "Ratchet",
                     Controller = new Clever1Controller()
                 },
-                new User(100)
+                new User(60)
                 {
                     Name = "Corail",
                     Controller = new ProbalisticController()
                 },
             };
 
-                    _wins.Add(users[0], 0);
-                    _wins.Add(users[1], 0);
-                    _wins.Add(users[2], 0);
+                     wins.Add(users[0], 0);
+                     wins.Add(users[1], 0);
+                     wins.Add(users[2], 0);
 
                     _displayer.SetupDisplay(users);
-          
+
                     var spinAngGoCount = 0;
+                    SpinAndGoGame spinAndGoGame = null;
                     do
                     {
                         spinAngGoCount++;
                         //Console.WriteLine(spinAngGoCount + " ");
 
-                        _spinAndGoGame = new SpinAndGoGame(1, _consoleNotifier, spinAngGoCount);
-                        _displayer.SetupGameDisplay(_spinAndGoGame);
+                        spinAndGoGame = new SpinAndGoGame(1, _consoleNotifier, spinAngGoCount);
+                        _displayer.SetupGameDisplay(spinAndGoGame);
 
-                        _spinAndGoGame.Setup(users);
+                        spinAndGoGame.Setup(users);
 
-                        await _logger.LogMessageAsync("Setting up interface");
 
-                        var winner = await _spinAndGoGame.LaunchAsync();
+                        var winner = spinAndGoGame.LaunchAsync().Result;
 
-                        _wins[winner]++;
+                        wins[winner]++;
 
-                        winner.Earn(_spinAndGoGame.Prize);
+                        winner.Earn(spinAndGoGame.Prize);
 
-                        totalEarn += _spinAndGoGame.Prize;
-                        totalPaid += _spinAndGoGame.Fee * 3;
+                        totalEarn += spinAndGoGame.Prize;
+                        totalPaid += spinAndGoGame.Fee * 3;
 
-                    } while (users.All(user => user.Cash - _spinAndGoGame.Fee >= 0) && spinAngGoCount < _simulationCount);
+                    } while (users.All(user => user.Cash - spinAndGoGame.Fee >= 0));
 
-                    _displayer.SetConsoleDisplayState(false);
+                    //_displayer.SetConsoleDisplayState(false);
                     _displayer.UpdateDisplay();
 
-                    Console.WriteLine($"TotalPaid : {totalPaid}");
-                    Console.WriteLine($"TotalEarn : {totalEarn}");
-                    Console.WriteLine($"Rake : {totalEarn / totalPaid * 100} %");
-                    Console.WriteLine($"Winrates : {string.Join(" | ", _wins.ToList().Select(kvp => $"{kvp.Key.Name}: {(double)kvp.Value / spinAngGoCount * 100}%"))}");
-                    Learner.Instance.SaveTableResults((double)_wins.Single(win => win.Key == users[2]).Value / spinAngGoCount * 100);
+                    //Console.WriteLine($"TotalPaid : {totalPaid}");
+                    //Console.WriteLine($"TotalEarn : {totalEarn}");
+                    //Console.WriteLine($"Rake : {totalEarn / totalPaid * 100} %");
+                    Console.WriteLine($"Iteration {count} : Winrates : {string.Join(" | ", wins.ToList().Select(kvp => $"{kvp.Key.Name}: {(double)kvp.Value / spinAngGoCount * 100}%"))}");
+                    Learner.Instance.SaveTableResults((double)wins.Single(win => win.Key == users[2]).Value / spinAngGoCount * 100);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
                 }
 
-                if (i % 50 == 0)
+                if (count % 5000 == 0)
                 {
-                    Learner.Instance.DumpResults(i);
+                    Learner.Instance.DumpResults(count);
                 }
-            }
+
+            });
+
 
             Learner.Instance.DumpResults(0);
         }
