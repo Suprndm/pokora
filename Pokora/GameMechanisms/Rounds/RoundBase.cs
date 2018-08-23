@@ -55,7 +55,7 @@ namespace Pokora.GameMechanisms.Rounds
 
         public void HandleAction(PlayerAction playerAction)
         {
-            Console.ReadKey(true);
+            //Console.ReadKey(true);
             HandlePlayerAction(playerAction);
             _notifier.PlayerActionDone(playerAction.Player.Name, playerAction);
             ComputePlayersActions();

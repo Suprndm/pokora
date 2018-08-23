@@ -31,25 +31,25 @@ namespace Pokora.IA
 
         public void GenerateNewElipticAreas()
         {
-            //_ellipticAreas = new Dictionary<PlayerState, EllipticArea>
-            //{
-            //    {PlayerState.Fold, GenerateRandomElipticArea() },
-            //    {PlayerState.Check , GenerateRandomElipticArea() },
-            //    {PlayerState.Call , GenerateRandomElipticArea() },
-            //    {PlayerState.Bet , GenerateRandomElipticArea() },
-            //    {PlayerState.Raise, GenerateRandomElipticArea() },
-            //    {PlayerState.AllIn, GenerateRandomElipticArea() },
-            //};
-
             _ellipticAreas = new Dictionary<PlayerState, EllipticArea>
             {
-                {PlayerState.Fold, new EllipticArea(0.149,0.199,0.31) },
-                {PlayerState.Check , new EllipticArea(0.301,0.495,0.166) },
-                {PlayerState.Call ,new EllipticArea(0.4,0.42,0.47)},
-                {PlayerState.Bet ,new EllipticArea(0.7,0.78,0.031)},
-                {PlayerState.Raise, new EllipticArea(0.245,0.618,0.389)},
-                {PlayerState.AllIn,new EllipticArea(0.300,0.334,0.1) },
+                {PlayerState.Fold, GenerateRandomElipticArea() },
+                {PlayerState.Check , GenerateRandomElipticArea() },
+                {PlayerState.Call , GenerateRandomElipticArea() },
+                {PlayerState.Bet , GenerateRandomElipticArea() },
+                {PlayerState.Raise, GenerateRandomElipticArea() },
+                {PlayerState.AllIn, GenerateRandomElipticArea() },
             };
+
+            //_ellipticAreas = new Dictionary<PlayerState, EllipticArea>
+            //{
+            //    {PlayerState.Fold, new EllipticArea(0.100,0.500,0.31) },
+            //    {PlayerState.Check , new EllipticArea(0.301,0.495,0.5) },
+            //    {PlayerState.Call ,new EllipticArea(0.4,0.42,0.47)},
+            //    {PlayerState.Bet ,new EllipticArea(0.7,0.78,0.031)},
+            //    {PlayerState.Raise, new EllipticArea(0.245,0.618,0.389)},
+            //    {PlayerState.AllIn,new EllipticArea(0.300,0.334,0.1) },
+            //};
 
             //_variableSet = new Dictionary<PlayerState, double>
             //{
