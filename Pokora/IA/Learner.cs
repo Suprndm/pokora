@@ -72,7 +72,7 @@ namespace Pokora.IA
 
         public void SaveTableResults(IDictionary<PlayerState, EllipticArea> areas, double winRate)
         {
-            _tableResults.Add(new TableResult() { EllipticAreas = areas, WinRate = winRate });
+            _tableResults.Add(new TableResult() { EllipticAreas = null, WinRate = winRate });
         }
 
         public void DumpResults(int iteration)

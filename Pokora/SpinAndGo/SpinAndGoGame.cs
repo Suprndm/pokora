@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Pokora.GameMechanisms;
 
@@ -18,7 +19,6 @@ namespace Pokora.SpinAndGo
         public double Fee { get; set; }
         public Table Table { get; set; }
         public int GameCount { get; private set; }
-
         public SpinAndGoGame(double entranceFee, INotifier notifier, int gameCount)
         {
             GameCount = gameCount;
@@ -39,39 +39,35 @@ namespace Pokora.SpinAndGo
             Users = users;
         }
 
-        public Task<User> LaunchAsync()
+        public User LaunchAsync()
         {
-            return Task.Run(async () =>
-             {
-                 try
-                 {
-                     Table = new Table(10, 20, 1000, 3, _notifier);
+            try
+            {
+                Table = new Table(10, 20, 1000, 3, _notifier);
 
-                     foreach (var user in Users)
-                     {
-                         Table.Join(user.Name, user.Controller);
-                         user.Pay(Fee);
-                     }
+                foreach (var user in Users)
+                {
+                    Table.Join(user.Name, user.Controller);
+                    user.Pay(Fee);
+                }
 
-                     Table.TableFinished += _table_TableFinished;
-                     _tableEnded = false;
+                Table.TableFinished += _table_TableFinished;
+                _tableEnded = false;
 
-                     Table.Start();
+                Table.Start();
 
-                     while (_tableEnded == false)
-                     {
-                         await Task.Delay(20);
-                     }
+                while (_tableEnded == false)
+                {
+                    Task.Delay(5).Wait() ;
+                }
 
-                     return Users.Single(user => user.Name == _winningPlayer.Name);
-                 }
-                 catch (Exception e)
-                 {
-                     Console.WriteLine(e);
-                     throw;
-                 }
-             
-             });
+                return Users.Single(user => user.Name == _winningPlayer.Name);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         private void _table_TableFinished(Player player)

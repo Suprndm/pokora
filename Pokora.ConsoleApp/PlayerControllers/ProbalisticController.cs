@@ -48,6 +48,7 @@ namespace Pokora.ConsoleApp.PlayerControllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                throw;
             }
           
         }

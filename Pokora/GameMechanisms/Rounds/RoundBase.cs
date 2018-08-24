@@ -55,21 +55,30 @@ namespace Pokora.GameMechanisms.Rounds
 
         public void HandleAction(PlayerAction playerAction)
         {
-            //Console.ReadKey(true);
-            HandlePlayerAction(playerAction);
-            _notifier.PlayerActionDone(playerAction.Player.Name, playerAction);
-            ComputePlayersActions();
-            var roundEnds = EvalRoundEnd();
+            try
+            {
+                //Console.ReadKey(true);
+                HandlePlayerAction(playerAction);
+                _notifier.PlayerActionDone(playerAction.Player.Name, playerAction);
+                ComputePlayersActions();
+                var roundEnds = EvalRoundEnd();
 
-            if (!roundEnds)
-            {
-                NextTurn();
+                if (!roundEnds)
+                {
+                    NextTurn();
+                }
+                else
+                {
+                    _notifier.RoundEnded(RoundName);
+                    RoundEnded?.Invoke(_currentPlayer);
+                }
             }
-            else
+            catch (Exception e)
             {
-                _notifier.RoundEnded(RoundName);
-                RoundEnded?.Invoke(_currentPlayer);
+                Console.WriteLine(e);
+                throw;
             }
+         
         }
 
         private void ResetPlayersStateIfNeeded()

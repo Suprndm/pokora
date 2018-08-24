@@ -82,29 +82,38 @@ namespace Pokora.GameMechanisms
 
         private void _game_GameEnded()
         {
-            _game.GameEnded -= _game_GameEnded;
-            if (EvalTableEnd())
+            try
             {
-                var winner = Players.Single(p => p.Cash > 0);
-                winner.WinTable();
-
-                TableFinished?.Invoke(winner);
-            }
-            else
-            {
-                var nextDealer = GetNextDealer();
-                foreach (var player in Players)
+                _game.GameEnded -= _game_GameEnded;
+                if (EvalTableEnd())
                 {
-                    if(player.Cash == 0)
-                        player.LoseTable();
+                    var winner = Players.Single(p => p.Cash > 0);
+                    winner.WinTable();
+
+                    TableFinished?.Invoke(winner);
                 }
+                else
+                {
+                    var nextDealer = GetNextDealer();
+                    foreach (var player in Players)
+                    {
+                        if (player.Cash == 0)
+                            player.LoseTable();
+                    }
 
-                Players = Players.Where(p => p.Cash > 0).ToList();
-                _game = new Game(SmallBlind, BigBlind, _deck, _notifier);
-                _game.GameEnded += _game_GameEnded;
-                _game.Start(Players, nextDealer);
+                    Players = Players.Where(p => p.Cash > 0).ToList();
+                    _game = new Game(SmallBlind, BigBlind, _deck, _notifier);
+                    _game.GameEnded += _game_GameEnded;
+                    _game.Start(Players, nextDealer);
 
+                }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        
         }
 
         private Player SetupDealer()

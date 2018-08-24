@@ -43,20 +43,29 @@ namespace Pokora.GameMechanisms
         {
             Task.Factory.StartNew(() =>
             {
-                _notifier.GameStartedWith(players.Select(p => p.Name).ToList());
+                try
+                {
+                    _notifier.GameStartedWith(players.Select(p => p.Name).ToList());
 
-                Deck.Regroup();
-                Deck.Shuffle();
+                    Deck.Regroup();
+                    Deck.Shuffle();
 
 
-                _notifier.DeckShuffled();
+                    _notifier.DeckShuffled();
 
-                OrderPlayers(players, dealer);
+                    OrderPlayers(players, dealer);
 
-                ResetPlayersState();
+                    ResetPlayersState();
 
-                _currentRound = _rounds[0];
-                StartRound();
+                    _currentRound = _rounds[0];
+                    StartRound();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+           
             });
         }
 
