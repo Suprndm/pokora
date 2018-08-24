@@ -21,17 +21,11 @@ namespace Pokora.IA
             _tableResults = new ConcurrentBag<TableResult>();
         }
 
-        private IDictionary<PlayerState, EllipticArea> _ellipticAreas;
         private ConcurrentBag<TableResult> _tableResults;
 
-        public IDictionary<PlayerState, EllipticArea> GetElipticAreas()
+        public IDictionary<PlayerState, EllipticArea> GenerateNewElipticAreas()
         {
-            return _ellipticAreas;
-        }
-
-        public void GenerateNewElipticAreas()
-        {
-            _ellipticAreas = new Dictionary<PlayerState, EllipticArea>
+            var ellipticAreas = new Dictionary<PlayerState, EllipticArea>
             {
                 {PlayerState.Fold, GenerateRandomElipticArea() },
                 {PlayerState.Check , GenerateRandomElipticArea() },
@@ -60,6 +54,8 @@ namespace Pokora.IA
             //    {PlayerState.Raise ,0.86},
             //    {PlayerState.AllIn ,0.183},
             //};
+
+            return ellipticAreas;
         }
 
         private EllipticArea GenerateRandomElipticArea()
@@ -74,9 +70,9 @@ namespace Pokora.IA
             };
         }
 
-        public void SaveTableResults(double winRate)
+        public void SaveTableResults(IDictionary<PlayerState, EllipticArea> areas, double winRate)
         {
-            _tableResults.Add(new TableResult() { EllipticAreas = _ellipticAreas, WinRate = winRate });
+            _tableResults.Add(new TableResult() { EllipticAreas = areas, WinRate = winRate });
         }
 
         public void DumpResults(int iteration)

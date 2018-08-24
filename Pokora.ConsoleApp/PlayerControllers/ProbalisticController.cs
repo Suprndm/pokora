@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Pokora.GameMechanisms;
 using Pokora.IA;
 using Pokora.IA.Decision;
 using Pokora.IA.Risk;
@@ -12,10 +14,10 @@ namespace Pokora.ConsoleApp.PlayerControllers
         private readonly DecisionEvaluator _decisionEvaluator;
         private readonly CashCriticalityEvaluator _cashCriticalityEvaluator;
 
-        public ProbalisticController()
+        public ProbalisticController(IDictionary<PlayerState, EllipticArea> areas)
         {
             _qualityEvaluator = new QualityEvaluator();
-            _decisionEvaluator = new DecisionEvaluator();
+            _decisionEvaluator = new DecisionEvaluator(areas);
             _cashCriticalityEvaluator = new CashCriticalityEvaluator();
         }
 
