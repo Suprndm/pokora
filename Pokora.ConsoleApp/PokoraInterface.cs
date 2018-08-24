@@ -41,7 +41,7 @@ namespace Pokora.ConsoleApp
             _displayer.SetConsoleDisplayState(false);
             _eventManager.EventReceived += _eventManager_EventReceived;
 
-            Parallel.ForEach(Enumerable.Range(0, 10000000), new ParallelOptions { MaxDegreeOfParallelism = 4}, (count) =>
+            Parallel.ForEach(Enumerable.Range(0, 10000000), new ParallelOptions { MaxDegreeOfParallelism = 8}, (count) =>
               {
                   var areas = Learner.Instance.GenerateNewElipticAreas();
 
@@ -100,7 +100,7 @@ namespace Pokora.ConsoleApp
                           totalEarn += spinAndGoGame.Prize;
                           totalPaid += spinAndGoGame.Fee * 3;
 
-                      } while (users.All(user => user.Cash - spinAndGoGame.Fee >= 0) && spinAngGoCount < 1000);
+                      } while (users.All(user => user.Cash - spinAndGoGame.Fee >= 0) && spinAngGoCount < 100);
 
                       //_displayer.SetConsoleDisplayState(false);
                       //_displayer.UpdateDisplay();
@@ -116,7 +116,7 @@ namespace Pokora.ConsoleApp
                       Console.WriteLine(e);
                   }
 
-                  if (count % 500 == 0)
+                  if (count % 5000 == 0)
                   {
                       Learner.Instance.DumpResults(count);
                   }
