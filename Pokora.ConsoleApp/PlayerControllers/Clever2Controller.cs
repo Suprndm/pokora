@@ -42,7 +42,6 @@ namespace Pokora.ConsoleApp.PlayerControllers
                     SendAction(new PlayerAction(Player, PlayerState.Bet, 0, 0,
                         AvailableActions.Single(action => action.State == PlayerState.Bet).Lower*2));
                 }
- 
             }
             else
             {

@@ -196,6 +196,11 @@ namespace Pokora.GameMechanisms
             Hand = new PlayerHand(card1, card2);
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public void Dispose()
         {
             Controller.ActionReceived -= Controller_ActionReceived;

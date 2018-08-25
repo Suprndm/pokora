@@ -9,7 +9,6 @@ namespace Pokora.IA.Risk
             double relativeGain = winableAmount / cash;
 
             double incentiveToBet = bettingRisk * relativeGain;
-            double normalizedIncentive = Math.Exp(incentiveToBet) / (1 + Math.Exp(incentiveToBet));
 
             return Math.Min(1, bettingRisk);
         }

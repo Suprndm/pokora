@@ -6,7 +6,7 @@ namespace Pokora.Utils
 {
     public static class DeckExtensions
     {
-        public static void Shuffle(this IList<Card> cards)
+        public static void Shuffle<T>(this IList<T> cards)
         {
             //Fisher–Yates shuffle en.wikipedia.org/wiki/Fisher–Yates_shuffle
             //for i from 0 to n−2 do

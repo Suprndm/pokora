@@ -54,7 +54,6 @@ namespace Pokora.GameMechanisms
                     _notifier.DeckShuffled();
 
                     OrderPlayers(players, dealer);
-
                     ResetPlayersState();
 
                     _currentRound = _rounds[0];

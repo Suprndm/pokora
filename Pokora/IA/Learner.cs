@@ -23,6 +23,22 @@ namespace Pokora.IA
 
         private ConcurrentBag<TableResult> _tableResults;
 
+
+        public IDictionary<PlayerState, EllipticArea> GetGoodAreas()
+        {    
+            var ellipticAreas = new Dictionary<PlayerState, EllipticArea>
+             {
+                 {PlayerState.Fold, new EllipticArea(0.621,0.975,0.346) },
+                 {PlayerState.Check , new EllipticArea(0.29,0.015,0.01) },
+                 {PlayerState.Call ,new EllipticArea(0.956,0.2,0.250)},
+                 {PlayerState.Bet ,new EllipticArea(0.639,0.998,0.2)},
+                 {PlayerState.Raise, new EllipticArea(0.287,0.129,0.450)},
+                 {PlayerState.AllIn,new EllipticArea(0.020,0.185,0.448) },
+             };
+
+            return ellipticAreas;
+        }
+
         public IDictionary<PlayerState, EllipticArea> GenerateNewElipticAreas()
         {
             var ellipticAreas = new Dictionary<PlayerState, EllipticArea>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pokora.Utils;
 
 namespace Pokora.GameMechanisms
 {
@@ -10,6 +11,8 @@ namespace Pokora.GameMechanisms
         public event Action<Player> TableFinished;
         public Table(int smallBlind, int bigBlind, double initialCash, int seatsCount, INotifier notifier)
         {
+            _initialSmallBlind = smallBlind;
+            _initialBigBlind = bigBlind;
             SmallBlind = smallBlind;
             BigBlind = bigBlind;
             InitialCash = initialCash;
@@ -20,8 +23,8 @@ namespace Pokora.GameMechanisms
             _deck = new Deck();
         }
 
-        public int SmallBlind { get; }
-        public int BigBlind { get; }
+        public int SmallBlind { get; private set; }
+        public int BigBlind { get; private set; }
         public int SeatsCount { get; }
         public double InitialCash { get; private set; }
         private IList<Player> _satPlayers;
@@ -30,6 +33,9 @@ namespace Pokora.GameMechanisms
         private Deck _deck;
         private Game _game;
         private INotifier _notifier;
+        public int GameCount { get; set; }
+        private int _initialSmallBlind;
+        private int _initialBigBlind;
 
         public Game CurrentGame => _game;
 
@@ -57,7 +63,7 @@ namespace Pokora.GameMechanisms
             //}
 
 
-            var player = new Player(userName, InitialCash, controller, _notifier , this);
+            var player = new Player(userName, InitialCash, controller, _notifier, this);
             Players.Add(player);
             _satPlayers.Add(player);
 
@@ -71,9 +77,10 @@ namespace Pokora.GameMechanisms
 
         public void Start()
         {
+            GameCount++;
             if (Players.Count < SeatsCount)
                 throw new Exception($"Table is not full yet. Need {SeatsCount - Players.Count} more player(s).");
-
+            Players.Shuffle();
             var dealerPlayer = SetupDealer();
             _game = new Game(SmallBlind, BigBlind, _deck, _notifier);
             _game.GameEnded += _game_GameEnded;
@@ -94,6 +101,7 @@ namespace Pokora.GameMechanisms
                 }
                 else
                 {
+                    GameCount++;
                     var nextDealer = GetNextDealer();
                     foreach (var player in Players)
                     {
@@ -101,6 +109,13 @@ namespace Pokora.GameMechanisms
                             player.LoseTable();
                     }
 
+                    if (GameCount % 10 == 0)
+                    {
+                        SmallBlind = SmallBlind * 2;
+                        BigBlind = BigBlind * 2;
+
+                        //Console.WriteLine($"Small Blind :{SmallBlind}");
+                    }
                     Players = Players.Where(p => p.Cash > 0).ToList();
                     _game = new Game(SmallBlind, BigBlind, _deck, _notifier);
                     _game.GameEnded += _game_GameEnded;
@@ -113,7 +128,7 @@ namespace Pokora.GameMechanisms
                 Console.WriteLine(e);
                 throw;
             }
-        
+
         }
 
         private Player SetupDealer()

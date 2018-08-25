@@ -40,11 +40,15 @@ namespace Pokora.ConsoleApp
             _displayer.IsDisabled = true;
             _displayer.SetConsoleDisplayState(false);
             _eventManager.EventReceived += _eventManager_EventReceived;
+            for (int i = 0; i < 10000000; i++)
+            {
+                
+            }
 
-            Parallel.ForEach(Enumerable.Range(0, 10000000), new ParallelOptions { MaxDegreeOfParallelism = 1 }, (count) =>
+            Parallel.ForEach(Enumerable.Range(0, 10000000), new ParallelOptions { MaxDegreeOfParallelism = 16}, (count) =>
                {
                    var areas = Learner.Instance.GenerateNewElipticAreas();
-                   Console.WriteLine($"New SET for iteration :{count}");
+                   //Console.WriteLine($"New SET for iteration :{count}");
                    try
                    {
 
@@ -55,20 +59,20 @@ namespace Pokora.ConsoleApp
 
                        var users = new List<User>
                {
-                new User(200)
+                new User(200000)
                 {
                     Name = "Tommy",
                     Controller = new Clever2Controller()
                 },
-                new User(200)
+                new User(200000)
                 {
                     Name = "Ratchet",
-                    Controller = new Clever1Controller()
+                    Controller = new ProbalisticController(Learner.Instance.GetGoodAreas())
                 },
-                new User(200)
+                new User(200000)
                 {
                     Name = "Corail",
-                    Controller = new ProbalisticController(areas)
+                    Controller =new ProbalisticController(Learner.Instance.GetGoodAreas())
                 },
                };
 
@@ -83,7 +87,6 @@ namespace Pokora.ConsoleApp
                        do
                        {
                            spinAngGoCount++;
-                           Console.WriteLine(spinAngGoCount);
 
                            spinAndGoGame = new SpinAndGoGame(1, _consoleNotifier, spinAngGoCount);
                           //_displayer.SetupGameDisplay(spinAndGoGame);
@@ -92,6 +95,7 @@ namespace Pokora.ConsoleApp
 
 
                            var winner = spinAndGoGame.LaunchAsync();
+                           //Console.WriteLine($"Table { spinAngGoCount}, gameCount : {spinAndGoGame.GetGameCount()}");
 
                            wins[winner]++;
 
@@ -100,7 +104,7 @@ namespace Pokora.ConsoleApp
                            totalEarn += spinAndGoGame.Prize;
                            totalPaid += spinAndGoGame.Fee * 3;
 
-                       } while (users.All(user => user.Cash - spinAndGoGame.Fee >= 0) && spinAngGoCount < 100);
+                       } while (users.All(user => user.Cash - spinAndGoGame.Fee >= 0) && spinAngGoCount < 200);
 
                       //_displayer.SetConsoleDisplayState(false);
                       //_displayer.UpdateDisplay();

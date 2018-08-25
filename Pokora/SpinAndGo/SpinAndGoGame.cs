@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Pokora.GameMechanisms;
+using Pokora.Utils;
 
 namespace Pokora.SpinAndGo
 {
@@ -39,12 +40,16 @@ namespace Pokora.SpinAndGo
             Users = users;
         }
 
+        public int GetGameCount()
+        {
+            return Table.GameCount;
+        }
+
         public User LaunchAsync()
         {
             try
             {
                 Table = new Table(10, 20, 1000, 3, _notifier);
-
                 foreach (var user in Users)
                 {
                     Table.Join(user.Name, user.Controller);
