@@ -67,8 +67,8 @@ namespace Pokora.ConsoleApp
                             new User(200000)
                             {
                                 Name = "Corail",
-                                Controller =new ProbalisticController(Learner.Instance.GetJsonAreas("{\"WinRate\":62.3,\"EllipticAreas\":{\"Fold\":{\"U\":0.89,\"V\":0.838,\"R\":0.442,\"A\":0.585,\"B\":0.891},\"Check\":{\"U\":0.922,\"V\":0.976,\"R\":0.213,\"A\":0.52,\"B\":0.39},\"Call\":{\"U\":0.797,\"V\":0.907,\"R\":0.012,\"A\":0.23,\"B\":0.204},\"Bet\":{\"U\":0.342,\"V\":0.001,\"R\":0.473,\"A\":0.035,\"B\":0.144},\"Raise\":{\"U\":0.604,\"V\":0.214,\"R\":0.088,\"A\":0.774,\"B\":0.779},\"AllIn\":{\"U\":0.296,\"V\":0.435,\"R\":0.336,\"A\":0.493,\"B\":0.264}}}"))
-                                //Controller =new ProbalisticController(areas)
+                                //Controller =new ProbalisticController(Learner.Instance.GetJsonAreas("{\"WinRate\":62.3,\"EllipticAreas\":{\"Fold\":{\"U\":0.89,\"V\":0.838,\"R\":0.442,\"A\":0.585,\"B\":0.891},\"Check\":{\"U\":0.922,\"V\":0.976,\"R\":0.213,\"A\":0.52,\"B\":0.39},\"Call\":{\"U\":0.797,\"V\":0.907,\"R\":0.012,\"A\":0.23,\"B\":0.204},\"Bet\":{\"U\":0.342,\"V\":0.001,\"R\":0.473,\"A\":0.035,\"B\":0.144},\"Raise\":{\"U\":0.604,\"V\":0.214,\"R\":0.088,\"A\":0.774,\"B\":0.779},\"AllIn\":{\"U\":0.296,\"V\":0.435,\"R\":0.336,\"A\":0.493,\"B\":0.264}}}"))
+                                Controller =new ProbalisticController(areas, true)
                             },
                 };
 

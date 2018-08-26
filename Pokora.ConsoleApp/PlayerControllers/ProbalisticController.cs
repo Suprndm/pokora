@@ -13,9 +13,11 @@ namespace Pokora.ConsoleApp.PlayerControllers
         private readonly QualityEvaluator _qualityEvaluator;
         private readonly DecisionEvaluator _decisionEvaluator;
         private readonly CashCriticalityEvaluator _cashCriticalityEvaluator;
+        private readonly bool _useEllipse;
 
-        public ProbalisticController(IDictionary<PlayerState, EllipticArea> areas)
+        public ProbalisticController(IDictionary<PlayerState, EllipticArea> areas, bool useEllipse = false)
         {
+            _useEllipse = useEllipse;
             _qualityEvaluator = new QualityEvaluator();
             _decisionEvaluator = new DecisionEvaluator(areas);
             _cashCriticalityEvaluator = new CashCriticalityEvaluator();
@@ -44,7 +46,7 @@ namespace Pokora.ConsoleApp.PlayerControllers
                 {
                     var test = 0;
                 }
-                var action = _decisionEvaluator.Decide(AvailableActions, quality, cashCriticality);
+                var action = _decisionEvaluator.Decide(AvailableActions, quality, cashCriticality, _useEllipse);
                 //if (Player.Name == "Ratchet") Console.WriteLine($"{Player.Name}: {action.State}");
                 SendAction(action);
             }

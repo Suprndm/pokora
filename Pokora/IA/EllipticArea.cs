@@ -13,7 +13,7 @@ namespace Pokora.IA
             R = r;
         }
 
-
+        public double Angle { get; set; }
         public double U { get; set; }
         public double V { get; set; }
         public double R { get; set; }

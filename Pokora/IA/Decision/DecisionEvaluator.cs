@@ -14,7 +14,7 @@ namespace Pokora.IA.Decision
             Areas = areas;
         }
 
-        public PlayerAction Decide(IList<PlayerAction> actions, double quality, double cashCriticality)
+        public PlayerAction Decide(IList<PlayerAction> actions, double quality, double cashCriticality, bool useElipse)
         {
             var decisions = new List<Decision>();
 
@@ -44,7 +44,15 @@ namespace Pokora.IA.Decision
                         break;
                 }
 
-                interest = ComputeDistanceRatioFromEllipticArea(quality, cashCriticality, elipticArea);
+                if (useElipse)
+                {
+                    interest = ComputeDistanceRatioFromElipse(quality, cashCriticality, elipticArea);
+                }
+                else
+                {
+                    interest = ComputeDistanceRatioFromCircleArea(quality, cashCriticality, elipticArea);
+
+                }
 
                 decisions.Add(
                     new Decision()
@@ -58,7 +66,7 @@ namespace Pokora.IA.Decision
             return decisions.OrderByDescending(decision => decision.Interest).First().Action;
         }
 
-        public double ComputeDistanceRatioFromEllipticArea(double quality, double criticality, EllipticArea area)
+        public double ComputeDistanceRatioFromCircleArea(double quality, double criticality, EllipticArea area)
         {
             var distance = MathHelper.Distance(quality, criticality, area.U, area.V);
 
@@ -68,5 +76,18 @@ namespace Pokora.IA.Decision
                 return 1 - distance / area.R;
             }
         }
+
+        public double ComputeDistanceRatioFromElipse(double quality, double criticality, EllipticArea area)
+        {
+            var distance = MathHelper.GetEllipticDistance(area, quality, criticality);
+
+            if (distance > 1) return 0;
+            else
+            {
+                return 1 - distance;
+            }
+        }
+
+
     }
 }

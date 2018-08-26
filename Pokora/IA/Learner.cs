@@ -105,6 +105,7 @@ namespace Pokora.IA
                 R = StaticRandom.Rand(500) / 1000d,
                 U = StaticRandom.Rand(1000) / 1000d,
                 V = StaticRandom.Rand(1000) / 1000d,
+                Angle = StaticRandom.Rand(365)* Math.PI/180,
             };
         }
 
@@ -133,18 +134,21 @@ namespace Pokora.IA
                     Fold_R = r.EllipticAreas[PlayerState.Fold].R,
                     Fold_U = r.EllipticAreas[PlayerState.Fold].U,
                     Fold_V = r.EllipticAreas[PlayerState.Fold].V,
+                    Fold_Angle = r.EllipticAreas[PlayerState.Fold].Angle,
 
                     Check_A = r.EllipticAreas[PlayerState.Check].A,
                     Check_B = r.EllipticAreas[PlayerState.Check].B,
                     Check_R = r.EllipticAreas[PlayerState.Check].R,
                     Check_U = r.EllipticAreas[PlayerState.Check].U,
                     Check_V = r.EllipticAreas[PlayerState.Check].V,
+                    Check_Angle = r.EllipticAreas[PlayerState.Check].Angle,
 
                     Call_A = r.EllipticAreas[PlayerState.Call].A,
                     Call_B = r.EllipticAreas[PlayerState.Call].B,
                     Call_R = r.EllipticAreas[PlayerState.Call].R,
                     Call_U = r.EllipticAreas[PlayerState.Call].U,
                     Call_V = r.EllipticAreas[PlayerState.Call].V,
+                    Call_Angle = r.EllipticAreas[PlayerState.Call].Angle,
 
 
                     Bet_A = r.EllipticAreas[PlayerState.Bet].A,
@@ -152,18 +156,21 @@ namespace Pokora.IA
                     Bet_R = r.EllipticAreas[PlayerState.Bet].R,
                     Bet_U = r.EllipticAreas[PlayerState.Bet].U,
                     Bet_V = r.EllipticAreas[PlayerState.Bet].V,
+                    Bet_Angle = r.EllipticAreas[PlayerState.Bet].Angle,
 
                     Raise_A = r.EllipticAreas[PlayerState.Raise].A,
                     Raise_B = r.EllipticAreas[PlayerState.Raise].B,
                     Raise_R = r.EllipticAreas[PlayerState.Raise].R,
                     Raise_U = r.EllipticAreas[PlayerState.Raise].U,
                     Raise_V = r.EllipticAreas[PlayerState.Raise].V,
+                    Raise_Angle = r.EllipticAreas[PlayerState.Raise].Angle,
 
                     Allin_A = r.EllipticAreas[PlayerState.AllIn].A,
                     Allin_B = r.EllipticAreas[PlayerState.AllIn].B,
                     Allin_R = r.EllipticAreas[PlayerState.AllIn].R,
                     Allin_U = r.EllipticAreas[PlayerState.AllIn].U,
                     Allin_V = r.EllipticAreas[PlayerState.AllIn].V,
+                    AllIn_Angle = r.EllipticAreas[PlayerState.AllIn].Angle,
                     Json = JsonConvert.SerializeObject(r),
                 }));
 
