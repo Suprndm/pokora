@@ -50,6 +50,7 @@ namespace Pokora.SpinAndGo
             try
             {
                 Table = new Table(10, 20, 1000, 3, _notifier);
+                Users.Shuffle();
                 foreach (var user in Users)
                 {
                     Table.Join(user.Name, user.Controller);
