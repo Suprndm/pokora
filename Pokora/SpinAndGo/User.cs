@@ -25,5 +25,10 @@
         }
 
         public IPlayerController Controller { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

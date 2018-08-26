@@ -40,9 +40,12 @@ namespace Pokora.ConsoleApp.PlayerControllers
                 var cashCriticality = _cashCriticalityEvaluator.EvaluateCashCriticality(Player.Cash, Player.Bid, maxBid, totalPlayerInvestedInPots, winableAmount);
 
                 //Console.WriteLine($"quality {quality} , critic {cashCriticality}");
-
+                if (Player.Name == "Corail")
+                {
+                    var test = 0;
+                }
                 var action = _decisionEvaluator.Decide(AvailableActions, quality, cashCriticality);
-
+                //if (Player.Name == "Ratchet") Console.WriteLine($"{Player.Name}: {action.State}");
                 SendAction(action);
             }
             catch (Exception e)
@@ -50,7 +53,7 @@ namespace Pokora.ConsoleApp.PlayerControllers
                 Console.WriteLine(e);
                 throw;
             }
-          
+
         }
     }
 }
