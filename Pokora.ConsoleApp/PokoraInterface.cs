@@ -58,16 +58,19 @@ namespace Pokora.ConsoleApp
                             {
                                 Name = "Tommy",
                                 Controller = new Clever2Controller()
+                                //Controller =new ProbalisticController(Learner.Instance.GetGoodAreas())
                             },
                             new User(200000)
                             {
                                 Name = "Ratchet",
-                                Controller =new ProbalisticController(Learner.Instance.GetJsonAreas("{\"WinRate\":62.3,\"EllipticAreas\":{\"Fold\":{\"U\":0.89,\"V\":0.838,\"R\":0.442,\"A\":0.585,\"B\":0.891},\"Check\":{\"U\":0.922,\"V\":0.976,\"R\":0.213,\"A\":0.52,\"B\":0.39},\"Call\":{\"U\":0.797,\"V\":0.907,\"R\":0.012,\"A\":0.23,\"B\":0.204},\"Bet\":{\"U\":0.342,\"V\":0.001,\"R\":0.473,\"A\":0.035,\"B\":0.144},\"Raise\":{\"U\":0.604,\"V\":0.214,\"R\":0.088,\"A\":0.774,\"B\":0.779},\"AllIn\":{\"U\":0.296,\"V\":0.435,\"R\":0.336,\"A\":0.493,\"B\":0.264}}}"))
+                                //Controller = new Clever2Controller()
+                                //Controller =new ProbalisticController(Learner.Instance.GetGoodAreas())
+                                Controller =new ProbalisticController(Learner.Instance.GetJsonAreas("{\"WinRate\":62.3,\"EllipticAreas\":{\"Fold\":{\"Angle\":0.62831853071795862,\"U\":0.711,\"V\":0.815,\"R\":0.107,\"A\":0.506,\"B\":0.894},\"Check\":{\"Angle\":0.715584993317675,\"U\":0.995,\"V\":0.425,\"R\":0.07,\"A\":0.91,\"B\":0.693},\"Call\":{\"Angle\":6.0039326268604931,\"U\":0.68,\"V\":0.13,\"R\":0.425,\"A\":0.884,\"B\":0.694},\"Bet\":{\"Angle\":0.052359877559829883,\"U\":0.553,\"V\":0.079,\"R\":0.087,\"A\":0.891,\"B\":0.665},\"Raise\":{\"Angle\":5.2883476335428181,\"U\":0.816,\"V\":0.718,\"R\":0.219,\"A\":0.963,\"B\":0.718},\"AllIn\":{\"Angle\":2.9146998508305306,\"U\":0.052,\"V\":0.88,\"R\":0.374,\"A\":0.544,\"B\":0.942}}}"), true)
                             },
                             new User(200000)
                             {
                                 Name = "Corail",
-                                //Controller =new ProbalisticController(Learner.Instance.GetJsonAreas("{\"WinRate\":62.3,\"EllipticAreas\":{\"Fold\":{\"U\":0.89,\"V\":0.838,\"R\":0.442,\"A\":0.585,\"B\":0.891},\"Check\":{\"U\":0.922,\"V\":0.976,\"R\":0.213,\"A\":0.52,\"B\":0.39},\"Call\":{\"U\":0.797,\"V\":0.907,\"R\":0.012,\"A\":0.23,\"B\":0.204},\"Bet\":{\"U\":0.342,\"V\":0.001,\"R\":0.473,\"A\":0.035,\"B\":0.144},\"Raise\":{\"U\":0.604,\"V\":0.214,\"R\":0.088,\"A\":0.774,\"B\":0.779},\"AllIn\":{\"U\":0.296,\"V\":0.435,\"R\":0.336,\"A\":0.493,\"B\":0.264}}}"))
+                                //Controller =new ProbalisticController(Learner.Instance.GetJsonAreas("{\"WinRate\":62.3,\"EllipticAreas\":{\"Fold\":{\"Angle\":0.62831853071795862,\"U\":0.711,\"V\":0.815,\"R\":0.107,\"A\":0.506,\"B\":0.894},\"Check\":{\"Angle\":0.715584993317675,\"U\":0.995,\"V\":0.425,\"R\":0.07,\"A\":0.91,\"B\":0.693},\"Call\":{\"Angle\":6.0039326268604931,\"U\":0.68,\"V\":0.13,\"R\":0.425,\"A\":0.884,\"B\":0.694},\"Bet\":{\"Angle\":0.052359877559829883,\"U\":0.553,\"V\":0.079,\"R\":0.087,\"A\":0.891,\"B\":0.665},\"Raise\":{\"Angle\":5.2883476335428181,\"U\":0.816,\"V\":0.718,\"R\":0.219,\"A\":0.963,\"B\":0.718},\"AllIn\":{\"Angle\":2.9146998508305306,\"U\":0.052,\"V\":0.88,\"R\":0.374,\"A\":0.544,\"B\":0.942}}}"), true)
                                 Controller =new ProbalisticController(areas, true)
                             },
                 };
@@ -117,11 +120,10 @@ namespace Pokora.ConsoleApp
                         Console.WriteLine(e);
                     }
 
-                    if (count % 2000 == 0)
+                    if (count % 500 == 0)
                     {
                         Learner.Instance.DumpResults(count);
                     }
-
                 });
 
 
