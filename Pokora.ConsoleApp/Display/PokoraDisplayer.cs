@@ -31,6 +31,8 @@ namespace Pokora.ConsoleApp.Display
             _spinAndGoGame = spinAndGoGame;
         }
 
+        public bool IsSoloGame { get; set; }
+
         public void PushEvent(string eventMessage)
         {
             if (_events == null || IsDisabled) return;
@@ -97,10 +99,13 @@ namespace Pokora.ConsoleApp.Display
         private void DrawPlayer(Player player)
         {
             string playerHandString = "";
-            if (player.Hand != null)
+            if (player.Hand != null )
             {
                 playerHandString =
                     $"{player.Hand.Card1.BuildStringFromCard()} {player.Hand.Card2.BuildStringFromCard()}";
+
+                if (IsSoloGame && player.Name != "Corail")
+                    playerHandString = "XXX";
             }
             Draw($"{player.Name}:{player.Cash} - {playerHandString} ->{player.Bid} - {player.State}");
 

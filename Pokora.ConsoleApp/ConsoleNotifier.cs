@@ -44,17 +44,17 @@ namespace Pokora.ConsoleApp
 
         public void PlayerCashChanged(string playerName, double amount)
         {
-            _eventManager.RaiseEvent($"{playerName} cash is now {amount}€");
+          //  _eventManager.RaiseEvent($"{playerName} cash is now {amount}€");
         }
 
         public void PlayerBidChanged(string playerName, double amount)
         {
-            _eventManager.RaiseEvent($"{playerName} bid is now {amount}€");
+          //  _eventManager.RaiseEvent($"{playerName} bid is now {amount}€");
         }
 
         public void PlayerStateChanged(string playerName, PlayerState playerState)
         {
-            _eventManager.RaiseEvent($"{playerName} state is now {playerState}");
+          //  _eventManager.RaiseEvent($"{playerName} state is now {playerState}");
         }
 
         public void PlayerAvailableActionsChanged(string playerName, IList<PlayerAction> actions)
