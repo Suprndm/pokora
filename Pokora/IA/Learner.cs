@@ -61,6 +61,11 @@ namespace Pokora.IA
             return ellipticAreas;
         }
 
+        public bool AreAreaOk(IDictionary<PlayerState, EllipticArea> areas)
+        {
+            return true;
+        }
+
         public IDictionary<PlayerState, EllipticArea> GenerateNewElipticAreas()
         {
             var ellipticAreas = new Dictionary<PlayerState, EllipticArea>
