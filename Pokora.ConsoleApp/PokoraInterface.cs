@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Pokora.ConsoleApp.Configuration;
 using Pokora.ConsoleApp.Display;
@@ -16,7 +18,7 @@ namespace Pokora.ConsoleApp
         private readonly Logger _logger;
         private readonly PokoraDisplayer _displayer;
         private IDictionary<User, int> _wins;
-
+        private static System.Threading.Timer _timer;
         private SpinAndGoGame _spinAndGoGame;
 
         private readonly ConsoleNotifier _consoleNotifier;
@@ -108,16 +110,32 @@ namespace Pokora.ConsoleApp
         }
 
 
-        public async Task Start(int maxDegreeOfParallelism)
+        public async Task Start(int maxDegreeOfParallelism, int minimumThreadCount, int maximumThreadCount)
         {
+            var notifier = new DummyNotifier();
+
             Console.WriteLine($"maxDegreeOfParallelism : {maxDegreeOfParallelism}");
+            Console.WriteLine($"minimumThreadCount : {minimumThreadCount}");
+            Console.WriteLine($"maximumThreadCount : {maximumThreadCount}");
+
+            ThreadPool.SetMinThreads(minimumThreadCount, minimumThreadCount);
+            ThreadPool.SetMaxThreads(maximumThreadCount, maximumThreadCount);
+            int tableDoneCount = 0;
+            int previousTableDoneCount = 0;
+
+            _timer = new Timer((e) =>
+            {
+                var diff = tableDoneCount - previousTableDoneCount;
+                Console.WriteLine($"{diff} tables / s");
+                previousTableDoneCount = tableDoneCount;
+            }, new object(), TimeSpan.FromMilliseconds(0), TimeSpan.FromMilliseconds(1000));
 
             _displayer.IsDisabled = true;
             _displayer.SetConsoleDisplayState(false);
             _eventManager.EventReceived += _eventManager_EventReceived;
 
 
-            Parallel.ForEach(Enumerable.Range(1, 10000000), new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism }, (count) =>
+            Parallel.ForEach(Enumerable.Range(1, 10000000), new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism}, (count) =>
                 {
                     var opponentsPool1 = new ConcurrentBag<User>()
             {
@@ -199,7 +217,7 @@ namespace Pokora.ConsoleApp
                             selectedPlayers.Add(corail);
                             spinAngGoCount++;
 
-                            spinAndGoGame = new SpinAndGoGame(1, _consoleNotifier, spinAngGoCount);
+                            spinAndGoGame = new SpinAndGoGame(1, notifier, spinAngGoCount);
                             spinAndGoGame.Setup(selectedPlayers.ToList());
 
 
@@ -214,6 +232,7 @@ namespace Pokora.ConsoleApp
 
                             totalEarn += spinAndGoGame.Prize;
                             totalPaid += spinAndGoGame.Fee * 3;
+                            tableDoneCount++;
                         } while (spinAngGoCount < 2000);
 
                         Console.WriteLine($"Iteration {count} : Winrates : {string.Join(" | ", wins.ToList().Select(kvp => $"{kvp.Key.Name}: {(double)kvp.Value / spinAngGoCount * 100}%"))}");
@@ -241,7 +260,7 @@ namespace Pokora.ConsoleApp
             _displayer.IsDisabled = true;
             _displayer.SetConsoleDisplayState(false);
             _eventManager.EventReceived += _eventManager_EventReceived;
-            Parallel.ForEach(Enumerable.Range(1, 10000000), new ParallelOptions { MaxDegreeOfParallelism = 4 }, (count) =>
+            Parallel.ForEach(Enumerable.Range(1, 10000000), new ParallelOptions { MaxDegreeOfParallelism = 1 }, (count) =>
             {
                 var areas = Learner.Instance.GenerateNewElipticAreas();
                 //Console.WriteLine($"New SET for iteration :{count}");
@@ -300,7 +319,7 @@ namespace Pokora.ConsoleApp
                         totalEarn += spinAndGoGame.Prize;
                         totalPaid += spinAndGoGame.Fee * 3;
 
-                    } while (users.All(user => user.Cash - spinAndGoGame.Fee >= 0) && spinAngGoCount < 1000);
+                    } while (users.All(user => user.Cash - spinAndGoGame.Fee >= 0) && spinAngGoCount < 100);
 
                     Console.WriteLine($"Iteration {count} : Winrates : {string.Join(" | ", wins.ToList().Select(kvp => $"{kvp.Key.Name}: {(double)kvp.Value / spinAngGoCount * 100}%"))}");
 

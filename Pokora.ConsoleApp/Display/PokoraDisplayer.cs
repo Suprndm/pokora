@@ -20,7 +20,7 @@ namespace Pokora.ConsoleApp.Display
         public void SetupDisplay(IList<User> users)
         {
             _events = new List<string>();
-            for (int i = 0; i < 40; i++)
+            for (int i = 0; i < 30; i++)
             {
                 _events.Add("");
             }

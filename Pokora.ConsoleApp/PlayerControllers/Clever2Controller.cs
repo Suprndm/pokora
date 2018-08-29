@@ -13,8 +13,7 @@ namespace Pokora.ConsoleApp.PlayerControllers
         {
             _combinationEvaluator = new CombinationEvaluator();
         }
-
-        public override void NotifyTurn()
+        public override PlayerAction Play(IList<PlayerAction> actions)
         {
             var maxBid = Table.Players.Max(player => player.Bid);
 
@@ -23,30 +22,28 @@ namespace Pokora.ConsoleApp.PlayerControllers
             var combination = _combinationEvaluator.EvaluateCards(new List<Card> { Player.Hand.Card1, Player.Hand.Card2 });
             if (debtRatio > 0.5 && combination.Score >= 200)
             {
-                SendAction(new PlayerAction(Player, PlayerState.AllIn, 0, 0,
-                    AvailableActions.Single(action => action.State == PlayerState.AllIn).Amount));
+                return (new PlayerAction(Player, PlayerState.AllIn, 0, 0,
+                    actions.Single(action => action.State == PlayerState.AllIn).Amount));
             }
-            else if(debtRatio> 0.5)
+             if(debtRatio> 0.5)
             {
-                SendAction(new PlayerAction(Player, PlayerState.Fold, 0, 0));
+                return (new PlayerAction(Player, PlayerState.Fold, 0, 0));
             }
-            else if(debtRatio <= 0.2)
+            if(debtRatio <= 0.2)
             {
-                if (AvailableActions.Any(action => action.State == PlayerState.Call))
+                if (actions.Any(action => action.State == PlayerState.Call))
                 {
-                    SendAction(new PlayerAction(Player, PlayerState.Call, 0, 0,
-                        AvailableActions.Single(action => action.State == PlayerState.Call).Amount));
+                    return (new PlayerAction(Player, PlayerState.Call, 0, 0,
+                        actions.Single(action => action.State == PlayerState.Call).Amount));
                 }
-                else if (AvailableActions.Any(action => action.State == PlayerState.Bet))
+                else if (actions.Any(action => action.State == PlayerState.Bet))
                 {
-                    SendAction(new PlayerAction(Player, PlayerState.Bet, 0, 0,
-                        AvailableActions.Single(action => action.State == PlayerState.Bet).Lower*2));
+                    return (new PlayerAction(Player, PlayerState.Bet, 0, 0,
+                        actions.Single(action => action.State == PlayerState.Bet).Lower*2));
                 }
             }
-            else
-            {
-                SendAction(new PlayerAction(Player, PlayerState.Fold, 0, 0));
-            }
+
+            return (new PlayerAction(Player, PlayerState.Fold, 0, 0));
         }
     }
 }

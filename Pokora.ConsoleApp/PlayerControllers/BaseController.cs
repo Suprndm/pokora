@@ -8,21 +8,8 @@ namespace Pokora.ConsoleApp.PlayerControllers
     {
         protected Player Player;
         protected Table Table;
-        protected IList<PlayerAction> AvailableActions;
 
-        public event Action<PlayerAction> ActionReceived;
-
-        protected virtual void SendAction(PlayerAction action)
-        {
-            ActionReceived?.Invoke(action);
-        }
-
-        public abstract void NotifyTurn();
-
-        public void SendAvailableActions(IList<PlayerAction> actions)
-        {
-            AvailableActions = actions;
-        }
+        public abstract PlayerAction Play(IList<PlayerAction> actions);
 
         public void LinkPlayer(Player player, Table table)
         {

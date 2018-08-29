@@ -14,17 +14,17 @@ namespace Pokora.ConsoleApp.PlayerControllers
             _combinationEvaluator = new CombinationEvaluator();
         }
 
-        public override void NotifyTurn()
+        public override PlayerAction Play(IList<PlayerAction> actions)
         {
             var combination = _combinationEvaluator.EvaluateCards(new List<Card> { Player.Hand.Card1, Player.Hand.Card2 });
             if (combination.Score >= 200)
             {
-                SendAction(new PlayerAction(Player, PlayerState.AllIn, 0, 0,
-                    AvailableActions.Single(action => action.State == PlayerState.AllIn).Amount));
+                return (new PlayerAction(Player, PlayerState.AllIn, 0, 0,
+                    actions.Single(action => action.State == PlayerState.AllIn).Amount));
             }
             else
             {
-                SendAction(new PlayerAction(Player, PlayerState.Fold, 0, 0));
+                return (new PlayerAction(Player, PlayerState.Fold, 0, 0));
             }
         }
     }

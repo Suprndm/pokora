@@ -23,7 +23,7 @@ namespace Pokora.ConsoleApp.PlayerControllers
             _cashCriticalityEvaluator = new CashCriticalityEvaluator();
         }
 
-        public override void NotifyTurn()
+        public override PlayerAction Play(IList<PlayerAction> actions)
         {
             try
             {
@@ -46,9 +46,9 @@ namespace Pokora.ConsoleApp.PlayerControllers
                 {
                     var test = 0;
                 }
-                var action = _decisionEvaluator.Decide(AvailableActions, quality, cashCriticality, _useEllipse);
+                var action = _decisionEvaluator.Decide(actions, quality, cashCriticality, _useEllipse);
                 //if (Player.Name == "Ratchet") Console.WriteLine($"{Player.Name}: {action.State}");
-                SendAction(action);
+                return (action);
             }
             catch (Exception e)
             {

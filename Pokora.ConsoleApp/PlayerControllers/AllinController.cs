@@ -7,11 +7,11 @@ namespace Pokora.ConsoleApp.PlayerControllers
 {
     public class AllinController : BaseController
     {
-        public override void NotifyTurn()
+        public override PlayerAction Play(IList<PlayerAction> actions)
         {
-            SendAction(AvailableActions.Any(a => a.State == PlayerState.AllIn)
+            return (actions.Any(a => a.State == PlayerState.AllIn)
                 ? new PlayerAction(Player, PlayerState.AllIn, 0, 0,
-                    AvailableActions.Single(action => action.State == PlayerState.AllIn).Amount)
+                    actions.Single(action => action.State == PlayerState.AllIn).Amount)
                 : new PlayerAction(Player, PlayerState.Fold, 0, 0));
         }
     }

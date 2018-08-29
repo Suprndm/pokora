@@ -99,12 +99,12 @@ namespace Pokora.ConsoleApp
 
         public void PlayerTurnBegin(string playerName)
         {
-            _eventManager.RaiseEvent($"It is now {playerName}'s turn");
+           //  _eventManager.RaiseEvent($"It is now {playerName}'s turn");
         }
 
         public void PlayerTurnEnd(string playerName)
         {
-            _eventManager.RaiseEvent($"{playerName}'s turn is over");
+           // _eventManager.RaiseEvent($"{playerName}'s turn is over");
         }
 
         public void PlayerActionDone(string playerName, PlayerAction action)
@@ -114,7 +114,7 @@ namespace Pokora.ConsoleApp
 
         public void PlayerCardsReceived(string playerName, PlayerHand playerHand)
         {
-            _eventManager.RaiseEvent($"{playerName} received new hand");
+           // _eventManager.RaiseEvent($"{playerName} received new hand");
         }
 
         public void CardRevealed(Card card)

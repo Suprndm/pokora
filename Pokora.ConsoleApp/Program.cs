@@ -24,11 +24,14 @@ namespace Pokora.ConsoleApp
                     .AddJsonFile("appsettings.json", true, true)
                     .Build();
                 var parallelism = int.Parse(config["Settings:Parallelism"]);
+                var minimumThreadCount = int.Parse(config["Settings:MinimumThreadCount"]);
+                var maximumThreadCount = int.Parse(config["Settings:MaximumThreadCount"]);
 
                 var container = await Bootstrapper.RegisterConfiguration();
                 var pokoraInterface = container.Resolve<PokoraInterface>();
                 var notifier = container.Resolve<ConsoleNotifier>();
-                await pokoraInterface.Start(parallelism);
+                await pokoraInterface.Start(parallelism, minimumThreadCount, maximumThreadCount);
+                //await pokoraInterface.WhosTheBest();
 
                 Console.WriteLine("Game finished ?");
                 Console.Read();

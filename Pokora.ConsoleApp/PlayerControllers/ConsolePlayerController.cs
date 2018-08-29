@@ -7,14 +7,13 @@ namespace Pokora.ConsoleApp.PlayerControllers
 {
     public class ConsolePlayerController : BaseController
     {
-
-        public override void NotifyTurn()
+        public override PlayerAction Play(IList<PlayerAction> actions)
         {
-            var action = InterpreteAction();
-            SendAction(action);
+            var action = InterpreteAction(actions);
+            return action;
         }
 
-        private PlayerAction InterpreteAction()
+        private PlayerAction InterpreteAction(IList<PlayerAction> actions)
         {
             PlayerAction playerAction = null;
             while (playerAction == null)
@@ -24,23 +23,23 @@ namespace Pokora.ConsoleApp.PlayerControllers
                 var split = commandString.Split(" ");
                 if (split.Length == 1)
                 {
-                    if (split[0] == "fold" && AvailableActions.Any(a => a.State == PlayerState.Fold))
+                    if (split[0] == "fold" && actions.Any(a => a.State == PlayerState.Fold))
                         playerAction = new PlayerAction(Player, PlayerState.Fold, 0, 0);
-                    if (split[0] == "check" && AvailableActions.Any(a => a.State == PlayerState.Check))
+                    if (split[0] == "check" && actions.Any(a => a.State == PlayerState.Check))
                         playerAction = new PlayerAction(Player, PlayerState.Check, 0, 0);
-                    if (split[0] == "call" && AvailableActions.Any(a => a.State == PlayerState.Call))
-                        playerAction = new PlayerAction(Player, PlayerState.Call, 0, 0, AvailableActions.Single(action => action.State == PlayerState.Call).Amount);
-                    if (split[0] == "allin" && AvailableActions.Any(a => a.State == PlayerState.AllIn))
-                        playerAction = new PlayerAction(Player, PlayerState.AllIn, 0, 0, AvailableActions.Single(action => action.State == PlayerState.AllIn).Amount);
+                    if (split[0] == "call" && actions.Any(a => a.State == PlayerState.Call))
+                        playerAction = new PlayerAction(Player, PlayerState.Call, 0, 0, actions.Single(action => action.State == PlayerState.Call).Amount);
+                    if (split[0] == "allin" && actions.Any(a => a.State == PlayerState.AllIn))
+                        playerAction = new PlayerAction(Player, PlayerState.AllIn, 0, 0, actions.Single(action => action.State == PlayerState.AllIn).Amount);
                 }
                 else
                 {
                     var amount = int.Parse(split[1]);
-                    if (split[0] == "raise" && AvailableActions.Any(a => a.State == PlayerState.Raise))
+                    if (split[0] == "raise" && actions.Any(a => a.State == PlayerState.Raise))
                     {
                         playerAction = new PlayerAction(Player, PlayerState.Raise, 0, 0, amount);
                     }
-                    if (split[0] == "bet" && AvailableActions.Any(a => a.State == PlayerState.Bet))
+                    if (split[0] == "bet" && actions.Any(a => a.State == PlayerState.Bet))
                     {
                         playerAction = new PlayerAction(Player, PlayerState.Bet, 0, 0, amount);
                     }
@@ -48,12 +47,6 @@ namespace Pokora.ConsoleApp.PlayerControllers
             }
 
             return playerAction;
-        }
-
-
-        public IList<PlayerAction> GetAvailableActions()
-        {
-            return AvailableActions;
         }
     }
 }
