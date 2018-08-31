@@ -60,7 +60,7 @@ namespace Pokora
 
         public void Shuffle()
         {
-            _cards.Shuffle();
+            _cards.LightShuffle();
         }
     }
 }

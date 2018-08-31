@@ -44,10 +44,21 @@ namespace Pokora.Utils
             }
 
             var temp = cards.ToList();
-   
+
             for (int i = 0; i < cards.Count; i++)
             {
                 cards[i] = temp[deck[i]];
+            }
+        }
+
+        public static void LightShuffle<T>(this IList<T> cards)
+        {
+            for (int i = cards.Count - 1; i > 0; i--)
+            {
+                int j = StaticRandom.Rand(i + 1);
+                var t = cards[i];
+                cards[i] = cards[j];
+                cards[j] = t;
             }
         }
     }

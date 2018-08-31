@@ -17,7 +17,6 @@ namespace Pokora.IA.Decision
         public PlayerAction Decide(IList<PlayerAction> actions, double quality, double cashCriticality, bool useElipse)
         {
             var decisions = new List<Decision>();
-
             foreach (var playerAction in actions)
             {
                 double interest = 0;

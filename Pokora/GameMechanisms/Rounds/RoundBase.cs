@@ -28,9 +28,7 @@ namespace Pokora.GameMechanisms.Rounds
 
         public abstract void Setup();
 
-        public event Action<Player> RoundEnded;
-
-        public void Start(IList<Player> players)
+        public Player Start(IList<Player> players)
         {
             Players = players;
             ResetPlayersStateIfNeeded();
@@ -38,19 +36,23 @@ namespace Pokora.GameMechanisms.Rounds
             Setup();
             _currentPlayer = Players.First();
 
-            ComputePlayersActions();
-
             var roundEnds = EvalRoundEnd();
-
-            if (!roundEnds)
-            {
-                _currentPlayer.StartTurn();
-            }
-            else
+            if (roundEnds)
             {
                 _notifier.RoundEnded(RoundName);
-                RoundEnded?.Invoke(_currentPlayer);
+                return _currentPlayer;
             }
+
+            var action = _currentPlayer.StartTurn(ComputePlayerAction(_currentPlayer));
+            HandleAction(action);
+
+            while (!EvalRoundEnd())
+            {
+                NextTurn();
+            }
+
+            _notifier.RoundEnded(RoundName);
+            return _currentPlayer;
         }
 
         public void HandleAction(PlayerAction playerAction)
@@ -60,25 +62,13 @@ namespace Pokora.GameMechanisms.Rounds
                 //Console.ReadKey(true);
                 HandlePlayerAction(playerAction);
                 _notifier.PlayerActionDone(playerAction.Player.Name, playerAction);
-                ComputePlayersActions();
-                var roundEnds = EvalRoundEnd();
-
-                if (!roundEnds)
-                {
-                    NextTurn();
-                }
-                else
-                {
-                    _notifier.RoundEnded(RoundName);
-                    RoundEnded?.Invoke(_currentPlayer);
-                }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-         
+
         }
 
         private void ResetPlayersStateIfNeeded()
@@ -101,7 +91,8 @@ namespace Pokora.GameMechanisms.Rounds
             }
 
             _currentPlayer = nextPlayer;
-            nextPlayer.StartTurn();
+            var playedAction = nextPlayer.StartTurn(ComputePlayerAction(nextPlayer));
+            HandleAction(playedAction);
         }
 
         private void HandlePlayerAction(PlayerAction playerAction)
@@ -140,43 +131,41 @@ namespace Pokora.GameMechanisms.Rounds
             }
         }
 
-        private void ComputePlayersActions()
+        private IList<PlayerAction> ComputePlayerAction(Player player)
         {
-            var maxBid = Players.Max(player => player.Bid);
-            foreach (var player in Players)
-            {
-                var availableActions = new List<PlayerAction>();
-                if (player.State == PlayerState.AllIn || player.State == PlayerState.Fold)
-                {
+            var maxBid = Players.Max(p => p.Bid);
 
+            var availableActions = new List<PlayerAction>();
+            if (player.State == PlayerState.AllIn || player.State == PlayerState.Fold)
+            {
+
+            }
+            else
+            {
+                availableActions.Add(new PlayerAction(player, PlayerState.Fold, 0, 0));
+                if (player.Bid < maxBid)
+                {
+                    availableActions.Add(new PlayerAction(player, PlayerState.Call, maxBid - player.Bid, maxBid - player.Bid, maxBid - player.Bid));
+                    if (player.Cash > maxBid - player.Bid)
+                    {
+                        availableActions.Add(new PlayerAction(player, PlayerState.Raise, (maxBid - player.Bid) * 2, player.Cash));
+                    }
+
+                    availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash, player.Cash));
                 }
                 else
                 {
-                    availableActions.Add(new PlayerAction(player, PlayerState.Fold, 0, 0));
-                    if (player.Bid < maxBid)
+                    if (player.Cash == 0)
                     {
-                        availableActions.Add(new PlayerAction(player, PlayerState.Call, maxBid - player.Bid, maxBid - player.Bid, maxBid - player.Bid));
-                        if (player.Cash > maxBid - player.Bid)
-                        {
-                            availableActions.Add(new PlayerAction(player, PlayerState.Raise, (maxBid - player.Bid) * 2, player.Cash));
-                        } 
 
-                        availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash, player.Cash));
                     }
-                    else
-                    {
-                        if (player.Cash == 0)
-                        {
-
-                        }
-                        availableActions.Add(new PlayerAction(player, PlayerState.Check, 0, 0));
-                        availableActions.Add(new PlayerAction(player, PlayerState.Bet, SmallBlind, player.Cash));
-                        availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash));
-                    }
+                    availableActions.Add(new PlayerAction(player, PlayerState.Check, 0, 0));
+                    availableActions.Add(new PlayerAction(player, PlayerState.Bet, SmallBlind, player.Cash));
+                    availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash));
                 }
-
-                player.GetAvailableActions(availableActions);
             }
+
+            return availableActions;
         }
 
         private bool EvalRoundEnd()
@@ -191,7 +180,7 @@ namespace Pokora.GameMechanisms.Rounds
             {
                 var lastPlayer = Players.Single(player => !player.IsRoundOver(maxBid));
 
-                if (lastPlayer.State == PlayerState.None && lastPlayer.Bid == maxBid && Players.Count(player=>player.IsOut())== Players.Count - 1)
+                if (lastPlayer.State == PlayerState.None && lastPlayer.Bid == maxBid && Players.Count(player => player.IsOut()) == Players.Count - 1)
                     return true;
 
                 if (Players.Count(player =>

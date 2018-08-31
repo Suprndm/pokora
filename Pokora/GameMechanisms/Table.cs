@@ -8,7 +8,6 @@ namespace Pokora.GameMechanisms
 {
     public class Table : IDisposable
     {
-        public event Action<Player> TableFinished;
         public Table(int smallBlind, int bigBlind, double initialCash, int seatsCount, INotifier notifier)
         {
             _initialSmallBlind = smallBlind;
@@ -75,7 +74,7 @@ namespace Pokora.GameMechanisms
             _game.TransmitAction(playerAction);
         }
 
-        public void Start()
+        public Player Start()
         {
             GameCount++;
             if (Players.Count < SeatsCount)
@@ -83,45 +82,42 @@ namespace Pokora.GameMechanisms
             Players.Shuffle();
             var dealerPlayer = SetupDealer();
             _game = new Game(SmallBlind, BigBlind, _deck, _notifier);
-            _game.GameEnded += _game_GameEnded;
             _game.Start(Players, dealerPlayer);
+
+            while (!EvalTableEnd())
+            {
+                RestartGame();
+            }
+
+            var winner = Players.Single(p => p.Cash > 0);
+            winner.WinTable();
+
+            return winner;
         }
 
-        private void _game_GameEnded()
+        private void RestartGame()
         {
             try
             {
-                _game.GameEnded -= _game_GameEnded;
-                if (EvalTableEnd())
+
+                GameCount++;
+                var nextDealer = GetNextDealer();
+                foreach (var player in Players)
                 {
-                    var winner = Players.Single(p => p.Cash > 0);
-                    winner.WinTable();
-
-                    TableFinished?.Invoke(winner);
+                    if (player.Cash == 0)
+                        player.LoseTable();
                 }
-                else
+
+                if (GameCount % 10 == 0)
                 {
-                    GameCount++;
-                    var nextDealer = GetNextDealer();
-                    foreach (var player in Players)
-                    {
-                        if (player.Cash == 0)
-                            player.LoseTable();
-                    }
+                    SmallBlind = SmallBlind * 2;
+                    BigBlind = BigBlind * 2;
 
-                    if (GameCount % 10 == 0)
-                    {
-                        SmallBlind = SmallBlind * 2;
-                        BigBlind = BigBlind * 2;
-
-                        //Console.WriteLine($"Small Blind :{SmallBlind}");
-                    }
-                    Players = Players.Where(p => p.Cash > 0).ToList();
-                    _game = new Game(SmallBlind, BigBlind, _deck, _notifier);
-                    _game.GameEnded += _game_GameEnded;
-                    _game.Start(Players, nextDealer);
-
+                    //Console.WriteLine($"Small Blind :{SmallBlind}");
                 }
+                Players = Players.Where(p => p.Cash > 0).ToList();
+                _game = new Game(SmallBlind, BigBlind, _deck, _notifier);
+                _game.Start(Players, nextDealer);
             }
             catch (Exception e)
             {

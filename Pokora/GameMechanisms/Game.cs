@@ -41,31 +41,19 @@ namespace Pokora.GameMechanisms
 
         public void Start(IList<Player> players, Player dealer)
         {
-            Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    _notifier.GameStartedWith(players.Select(p => p.Name).ToList());
+            _notifier.GameStartedWith(players.Select(p => p.Name).ToList());
 
-                    Deck.Regroup();
-                    Deck.Shuffle();
+            Deck.Regroup();
+            Deck.Shuffle();
 
 
-                    _notifier.DeckShuffled();
+            _notifier.DeckShuffled();
 
-                    OrderPlayers(players, dealer);
-                    ResetPlayersState();
+            OrderPlayers(players, dealer);
+            ResetPlayersState();
 
-                    _currentRound = _rounds[0];
-                    StartRound();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-           
-            });
+            _currentRound = _rounds[0];
+            StartRound();
         }
 
         public void TransmitAction(PlayerAction playerAction)
@@ -75,13 +63,7 @@ namespace Pokora.GameMechanisms
 
         private void StartRound()
         {
-            _currentRound.RoundEnded += _currentRound_RoundEnded;
-            _currentRound.Start(Players);
-        }
-
-        private void _currentRound_RoundEnded(Player lastPlayerToPlay)
-        {
-            _currentRound.RoundEnded -= _currentRound_RoundEnded;
+           var lastPlayerToPlay = _currentRound.Start(Players);
 
             HandlePots();
 
@@ -89,9 +71,7 @@ namespace Pokora.GameMechanisms
             {
                 ResolvePots();
 
-
                 _notifier.GameEnded();
-                GameEnded?.Invoke();
             }
             else
             {

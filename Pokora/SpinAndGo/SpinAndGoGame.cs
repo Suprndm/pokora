@@ -13,9 +13,7 @@ namespace Pokora.SpinAndGo
         private readonly double _multiplier;
         private readonly INotifier _notifier;
         public IList<User> Users { get; private set; }
-        private bool _tableEnded;
 
-        private Player _winningPlayer;
         public double Prize { get; set; }
         public double Fee { get; set; }
         public Table Table { get; set; }
@@ -57,31 +55,15 @@ namespace Pokora.SpinAndGo
                     user.Pay(Fee);
                 }
 
-                Table.TableFinished += _table_TableFinished;
-                _tableEnded = false;
+                var winner = Table.Start();
 
-                Table.Start();
-
-                while (_tableEnded == false)
-                {
-                    Task.Delay(5).Wait() ;
-                }
-
-                return Users.Single(user => user.Name == _winningPlayer.Name);
+                return Users.Single(user => user.Name == winner.Name);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-        }
-
-        private void _table_TableFinished(Player player)
-        {
-            _winningPlayer = player;
-            Table.Dispose();
-            _notifier.SpinAndGoWonBy(player);
-            _tableEnded = true;
         }
 
         private double GetMultiplier()

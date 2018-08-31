@@ -21,7 +21,6 @@ namespace Pokora.GameMechanisms
             Cash = cash;
             Controller = controller;
             Controller.LinkPlayer(this, table);
-            Controller.ActionReceived += Controller_ActionReceived;
         }
 
         public string Name { get; }
@@ -87,7 +86,7 @@ namespace Pokora.GameMechanisms
         {
             if (State == PlayerState.Fold) return true;
             if (State == PlayerState.AllIn) return true;
-            if (Bid == maxBid && State!= PlayerState.None) return true;
+            if (Bid == maxBid && State != PlayerState.None) return true;
 
             return false;
         }
@@ -154,16 +153,9 @@ namespace Pokora.GameMechanisms
             if (amount <= 0) throw new Exception($"Amount should be positive - current : {amount}");
         }
 
-        public void GetAvailableActions(IList<PlayerAction> availableActions)
-        {
-            _playerAvailableActions = availableActions;
-            Controller.SendAvailableActions(_playerAvailableActions);
-            _notifier.PlayerAvailableActionsChanged(Name, availableActions);
-        }
-
         private void Controller_ActionReceived(PlayerAction action)
         {
-        
+
 
             if (_isPlayerTurn == false) throw new Exception($"It is not {Name}'s turn");
 
@@ -173,16 +165,11 @@ namespace Pokora.GameMechanisms
             ActionGiven?.Invoke(action);
         }
 
-        public void StartTurn()
+        public PlayerAction StartTurn(IList<PlayerAction> actions)
         {
-            if (_playerAvailableActions.Count == 0)
-            {
-                return;
-            }
-
             _isPlayerTurn = true;
-            _notifier.PlayerTurnBegin(this, _playerAvailableActions);
-            Controller.NotifyTurn();
+            _notifier.PlayerTurnBegin(this, actions);
+            return Controller.Play(actions);
         }
 
         public void EndTurn()
@@ -203,7 +190,6 @@ namespace Pokora.GameMechanisms
 
         public void Dispose()
         {
-            Controller.ActionReceived -= Controller_ActionReceived;
         }
     }
 }
