@@ -8,18 +8,18 @@ using Pokora.IA.Risk;
 
 namespace Pokora.ConsoleApp.PlayerControllers
 {
-    class ProbalisticController : BaseController
+    class AdaptedController : BaseController
     {
         private readonly QualityEvaluator _qualityEvaluator;
         private readonly DecisionEvaluator _decisionEvaluator;
         private readonly CashCriticalityEvaluator _cashCriticalityEvaluator;
-        private readonly bool _useEllipse;
-        private IDictionary<PlayerState, EllipticArea> _areas;
+        private readonly AgressivityEvaluator _agressivityEvaluator;
+        private readonly IList<TableResult> _ias;
 
-        public ProbalisticController(IDictionary<PlayerState, EllipticArea> areas, bool useEllipse = false)
+        public AdaptedController(IList<TableResult> ias)
         {
-            _areas = areas;
-            _useEllipse = useEllipse;
+            _ias = ias;
+            _agressivityEvaluator = new AgressivityEvaluator();
             _qualityEvaluator = new QualityEvaluator();
             _decisionEvaluator = new DecisionEvaluator();
             _cashCriticalityEvaluator = new CashCriticalityEvaluator();
@@ -43,10 +43,22 @@ namespace Pokora.ConsoleApp.PlayerControllers
 
                 var cashCriticality = _cashCriticalityEvaluator.EvaluateCashCriticality(Player.Cash, Player.Bid, maxBid, totalPlayerInvestedInPots, winableAmount);
 
-                //Console.WriteLine($"quality {quality} , critic {cashCriticality}");
-           
-                var action = _decisionEvaluator.Decide(actions, quality, cashCriticality, _useEllipse, _areas);
-                //if (Player.Name == "Ratchet") Console.WriteLine($"{Player.Name}: {action.State}");
+                var agressivity = _agressivityEvaluator.EvaluateAggressivity(Table.Players.Where(p => p != Player).ToList());
+                TableResult iaToUse = _ias[1];
+                //Console.WriteLine(agressivity);
+                if (agressivity > 0.3)
+                {
+                    iaToUse = _ias[1];
+                }
+                else
+                {
+                    iaToUse = _ias[0];
+                }
+
+                //Console.WriteLine(agressivity);
+
+
+                var action = _decisionEvaluator.Decide(actions, quality, cashCriticality, true, iaToUse.EllipticAreas);
                 return (action);
             }
             catch (Exception e)

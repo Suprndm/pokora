@@ -25,6 +25,11 @@ namespace Pokora.IA
         private ConcurrentBag<TableResult> _tableResults;
 
 
+        public TableResult GetJsonResult(string json)
+        {
+            var tableResult = JsonConvert.DeserializeObject<TableResult>(json);
+            return tableResult;
+        }
         public IDictionary<PlayerState, EllipticArea> GetJsonAreas(string json)
         {
 

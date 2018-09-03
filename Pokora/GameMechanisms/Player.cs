@@ -10,6 +10,7 @@ namespace Pokora.GameMechanisms
         public event Action<PlayerAction> ActionGiven;
         private readonly Guid _guid;
         private readonly Table _table;
+        public IList<PlayerAction> PlayedActions { get; }
 
         public Player(string name, double cash, IPlayerController controller, INotifier notifier, Table table)
         {
@@ -21,6 +22,7 @@ namespace Pokora.GameMechanisms
             Cash = cash;
             Controller = controller;
             Controller.LinkPlayer(this, table);
+            PlayedActions = new List<PlayerAction>();
         }
 
         public string Name { get; }

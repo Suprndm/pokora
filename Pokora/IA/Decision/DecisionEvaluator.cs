@@ -7,14 +7,11 @@ namespace Pokora.IA.Decision
 {
     public class DecisionEvaluator
     {
-        public IDictionary<PlayerState, EllipticArea> Areas { get; }
-
-        public DecisionEvaluator(IDictionary<PlayerState, EllipticArea> areas)
+        public DecisionEvaluator()
         {
-            Areas = areas;
         }
 
-        public PlayerAction Decide(IList<PlayerAction> actions, double quality, double cashCriticality, bool useElipse)
+        public PlayerAction Decide(IList<PlayerAction> actions, double quality, double cashCriticality, bool useElipse, IDictionary<PlayerState, EllipticArea>  areas)
         {
             var decisions = new List<Decision>();
             foreach (var playerAction in actions)
@@ -22,7 +19,7 @@ namespace Pokora.IA.Decision
                 double interest = 0;
                 double amount = 0;
 
-                var elipticArea = Areas[playerAction.State];
+                var elipticArea = areas[playerAction.State];
 
                 switch (playerAction.State)
                 {
@@ -40,6 +37,7 @@ namespace Pokora.IA.Decision
                         amount = playerAction.Lower * 2;
                         break;
                     case PlayerState.AllIn:
+                        amount = playerAction.Amount;
                         break;
                 }
 

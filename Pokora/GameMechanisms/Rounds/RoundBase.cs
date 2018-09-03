@@ -129,6 +129,8 @@ namespace Pokora.GameMechanisms.Rounds
             {
                 player.State = playerAction.State;
             }
+
+            player.PlayedActions.Add(playerAction);
         }
 
         private IList<PlayerAction> ComputePlayerAction(Player player)
@@ -161,7 +163,7 @@ namespace Pokora.GameMechanisms.Rounds
                     }
                     availableActions.Add(new PlayerAction(player, PlayerState.Check, 0, 0));
                     availableActions.Add(new PlayerAction(player, PlayerState.Bet, SmallBlind, player.Cash));
-                    availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash));
+                    availableActions.Add(new PlayerAction(player, PlayerState.AllIn, player.Cash, player.Cash, player.Cash));
                 }
             }
 
